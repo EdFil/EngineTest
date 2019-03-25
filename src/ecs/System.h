@@ -33,11 +33,11 @@ public:
 
         Handle handle = getReusableHandle();
         if (handle == k_invalidHandle) {
-            handle = _handles.size();
+            handle = static_cast<Handle>(_handles.size());
             _handles.push_back(handle);
         }
 
-        ComponentWrapper& component = _components[index];
+        ComponentWrapper& component = _components[static_cast<size_t>(index)];
         component.state = ComponentWrapper::State::Used;
         component.handle = handle;
         std::cout << "[System::createComponent] Created I[" << index << "] H[" << handle << "]" << std::endl;
@@ -51,17 +51,17 @@ public:
             return false;
         }
 
-        ComponentIndex index = _handles[handle];
+        ComponentIndex index = _handles[static_cast<size_t>(handle)];
         if (index < 0 || static_cast<size_t>(index) > _components.size()) {
             std::cout << "[System::releaseComponent] Invalid index (" << index << ") in handle (" << handle << ")" << std::endl;
-            _handles[handle] = k_invalidHandle;
+            _handles[static_cast<size_t>(handle)] = k_invalidHandle;
             return false;
         }
 
-        ComponentWrapper& componentWrapper = _components[index];
+        ComponentWrapper& componentWrapper = _components[static_cast<size_t>(index)];
         componentWrapper.handle = k_invalidHandle;
         componentWrapper.state = ComponentWrapper::State::Invalidated;
-        _handles[handle] = k_invalidHandle;
+        _handles[static_cast<size_t>(handle)] = k_invalidHandle;
         std::cout << "[System::releaseComponent] Release I[" << index << "] H[" << handle << "]" << std::endl;
 
         return true;
@@ -84,6 +84,7 @@ protected:
     std::vector<ComponentWrapper> _components;
     std::vector<ComponentIndex> _handles;
     bool _needsReorder;
+    bool _padding[3];
 
     ComponentIndex getFirstAvailableComponentIndex() const {
         for (size_t i = 0; i < _components.size(); i++) {

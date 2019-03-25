@@ -32,18 +32,18 @@ message(STATUS "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
 # ===========
 
 if (MSVC)
-    message (STATUS "No flags for MSVC yet... Using default ones")
+		set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /EHsc /experimental:external /external:anglebrackets /external:W0")
+        set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od /RTC1 /DDEBUG /Wall")
+        set(CMAKE_CXX_FLAGS_RELEASE "/MD /Ox /Ob2 /DRELEASE")
 else()
-    if (${CMAKE_BUILD_TYPE} STREQUAL Debug)
-        set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -O0 -g -DDEBUG")
-        message (STATUS "CMAKE_CXX_FLAGS_DEBUG=${CMAKE_CXX_FLAGS_DEBUG}")
-    else()
-        set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS} -O3 -DRELEASE")
-        message (STATUS "CMAKE_CXX_FLAGS_RELEASE=${CMAKE_CXX_FLAGS_RELEASE}")
-    endif()
+		set(CMAKE_CXX_FLAGS "-fno-exceptions")
+        set(CMAKE_CXX_FLAGS_DEBUG "-Wall -Wextra -pedantic -O0 -g -DDEBUG")
+        set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DRELEASE")
 endif()
 
 message (STATUS "CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
+message (STATUS "CMAKE_CXX_FLAGS_DEBUG=${CMAKE_CXX_FLAGS_DEBUG}")
+message (STATUS "CMAKE_CXX_FLAGS_RELEASE=${CMAKE_CXX_FLAGS_RELEASE}")
 
 # ============
 # Dependencies
@@ -71,3 +71,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${SOURCE_DIR})
 ## Copy resources to build dir
 #add_custom_command(TARGET Engine_TESTS POST_BUILD
 #		COMMAND ${CMAKE_COMMAND} -E copy_directory ${RESOURCES_DIR} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources)
+
+# Source group generation for IDEs
+foreach(SOURCE IN ITEMS ${SOURCES})
+    get_filename_component(SOURCE_PATH "${SOURCE}" PATH)
+    file(RELATIVE_PATH SOURCE_PATH_REL "${SOURCE_DIR}/.." "${SOURCE_PATH}")
+    string(REPLACE "/" "\\" GROUP_PATH "${SOURCE_PATH_REL}")
+    source_group("${GROUP_PATH}" FILES "${SOURCE}")
+endforeach()

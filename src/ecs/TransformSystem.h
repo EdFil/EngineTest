@@ -6,7 +6,7 @@
 
 #include "System.h"
 
-#define DEBUG_TRANSFORMS
+//#define DEBUG_TRANSFORMS
 #ifdef DEBUG_TRANSFORMS
     #define DP_TRANSFORM(__PARAMS__) __PARAMS__
 #else
@@ -17,9 +17,9 @@ struct TransformComponent {
     TransformComponent() : x(0.0f), y(0.0f), z(0.0f) { DP_TRANSFORM(std::cout << "[TransformComponent::Constructor]" << std::endl;) }
     TransformComponent(float x, float y, float z) : x(x), y(y), z(z)  { DP_TRANSFORM(std::cout << "[TransformComponent::ConstructorXYZ]" << std::endl;) }
     TransformComponent(const TransformComponent& rhs) : x(rhs.x), y(rhs.y), z(rhs.z) { DP_TRANSFORM(std::cout << "[TransformComponent::CopyConstructor]" << std::endl;) }
-    TransformComponent(const TransformComponent&& rhs) noexcept : x(rhs.x), y(rhs.y), z(rhs.z) { DP_TRANSFORM(std::cout << "[TransformComponent::MoveConstructor]" << std::endl;) }
+    TransformComponent(const TransformComponent&& rhs) : x(rhs.x), y(rhs.y), z(rhs.z) { DP_TRANSFORM(std::cout << "[TransformComponent::MoveConstructor]" << std::endl;) }
     TransformComponent& operator=(const TransformComponent& rhs) { DP_TRANSFORM(std::cout << "[TransformComponent::CopyAssignmentOperator]" << std::endl;) x = rhs.x; y = rhs.y;  z = rhs.z; return *this; }
-    TransformComponent& operator=(const TransformComponent&& rhs) noexcept { DP_TRANSFORM(std::cout << "[TransformComponent::MoveAssignmentOperator]" << std::endl;) x = rhs.x; y = rhs.y;  z = rhs.z; return *this; }
+    TransformComponent& operator=(const TransformComponent&& rhs) { DP_TRANSFORM(std::cout << "[TransformComponent::MoveAssignmentOperator]" << std::endl;) x = rhs.x; y = rhs.y;  z = rhs.z; return *this; }
     ~TransformComponent() { DP_TRANSFORM(std::cout << "[TransformComponent::Destructor]" << std::endl;) }
 
     void set(float _x, float _y, float _z) { x = _x; y = _y; z = _z; }
@@ -35,7 +35,7 @@ public:
     void initWith(size_t capacity) final {
         System::initWith(capacity);
         for (size_t i = 0; i < _components.size(); i++) {
-            _components[i].component.set(i, i, i);
+            _components[i].component.set(static_cast<float>(i), static_cast<float>(i), static_cast<float>(i));
         }
     }
 
