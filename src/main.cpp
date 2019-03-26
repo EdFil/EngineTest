@@ -15,34 +15,47 @@ int main() {
     Handle handle0 = system->createComponent();
     Handle handle1 = system->createComponent();
     Handle handle2 = system->createComponent();
+    Handle handle3 = system->createComponent();
+    Handle handle4 = system->createComponent();
+
+    system->checkSystem();
     std::cout << std::endl;
 
     std::cout << "[main.cpp] Update()" << std::endl;
     system->update(0.0f);
+    system->checkSystem();
     std::cout << std::endl;
 
     std::cout << "[main.cpp] Delete middle component" << std::endl;
     system->releaseComponent(handle1);
+    system->releaseComponent(handle2);
+    system->releaseComponent(handle3);
+    system->checkSystem();
     std::cout << std::endl;
 
     std::cout << "[main.cpp] Update()" << std::endl;
     system->update(0.0f);
+    system->checkSystem();
     std::cout << std::endl;
 
     std::cout << "[main.cpp] Reorder()" << std::endl;
     system->reorder();
+    system->checkSystem();
     std::cout << std::endl;
 
     std::cout << "[main.cpp] Update()" << std::endl;
     system->update(0.0f);
+    system->checkSystem();
     std::cout << std::endl;
 
     std::cout << "[main.cpp] Create 1 component()" << std::endl;
     handle1 = system->createComponent();
+    system->checkSystem();
     std::cout << std::endl;
 
     std::cout << "[main.cpp] Update()" << std::endl;
     system->update(0.0f);
+    system->checkSystem();
     std::cout << std::endl;
 
     (void)handle0;

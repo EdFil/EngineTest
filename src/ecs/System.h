@@ -40,6 +40,7 @@ public:
         ComponentWrapper& component = _components[static_cast<size_t>(index)];
         component.state = ComponentWrapper::State::Used;
         component.handle = handle;
+        _handles[handle] = index;
         std::cout << "[System::createComponent] Created I[" << index << "] H[" << handle << "]" << std::endl;
 
         return handle;
@@ -65,6 +66,36 @@ public:
         std::cout << "[System::releaseComponent] Release I[" << index << "] H[" << handle << "]" << std::endl;
 
         return true;
+    }
+
+    void checkSystem() {
+        std::vector<Handle> checkedHandles;
+        for (size_t i = 0; i < _handles.size(); i++) {
+            Handle handle = _handles[i];
+            if (handle != k_invalidHandle) {
+                if (std::find(checkedHandles.cbegin(), checkedHandles.cend(), handle) != checkedHandles.cend()) {
+                    abort();
+                }
+                const ComponentWrapper& componentWrapper = _components[handle];
+                if (componentWrapper.handle != i) {
+                    abort();
+                } else {
+                    checkedHandles.emplace_back(handle);
+                }
+            }
+        }
+
+        for (size_t i = 0; i < _components.size(); i++) {
+            const ComponentWrapper& componentWrapper = _components[i];
+            if (componentWrapper.state == ComponentWrapper::State::Used) {
+                if (std::find(checkedHandles.cbegin(), checkedHandles.cend(), i) == checkedHandles.cend()) {
+                    abort();
+                }
+                if (i != _handles[componentWrapper.handle]) {
+                    abort();
+                }
+            }
+        }
     }
 
     virtual void update(float) = 0;

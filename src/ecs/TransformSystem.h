@@ -42,9 +42,10 @@ public:
     void update(float) final {
         for (ComponentWrapper& componentWrapper : _components) {
             if (componentWrapper.state == ComponentWrapper::State::Unused) {
-                break;
+                std::cout << "Unused" << std::endl;
+                continue;
             } else if (componentWrapper.state == ComponentWrapper::State::Invalidated) {
-                std::cout << "Skip" << std::endl;
+                std::cout << "Invalid" << std::endl;
                 continue;
             }
 
@@ -59,31 +60,32 @@ public:
 //            return;
 //        }
 
-        size_t lastUsedComponent = 0;
+        size_t firstInvalidatedComponentIndex = _components.size();
         for (size_t i = 0; i < _components.size(); i++) {
             ComponentWrapper& componentWrapper = _components[i];
             if (componentWrapper.state == ComponentWrapper::State::Used) {
-                continue;
-            } else if (componentWrapper.state == ComponentWrapper::State::Invalidated) {
-                if (lastUsedComponent < i) {
-                    for (lastUsedComponent = i + 1; lastUsedComponent < _components.size(); lastUsedComponent++) {
-                        if (_components[lastUsedComponent].state != ComponentWrapper::State::Used) {
-                            lastUsedComponent = lastUsedComponent - 1;
-                            break;
-                        }
-                    }
+                if (firstInvalidatedComponentIndex < i) {
+                    _components[firstInvalidatedComponentIndex].component = _components[i].component;
+                    _components[firstInvalidatedComponentIndex].state = ComponentWrapper::State::Used;
+                    _components[firstInvalidatedComponentIndex].handle = _components[i].handle;
+                    _handles[_components[firstInvalidatedComponentIndex].handle] = static_cast<Handle>(firstInvalidatedComponentIndex);
 
-                    if (lastUsedComponent > i) {
-                        _components[i].component = _components[lastUsedComponent].component;
-                        _components[i].state = ComponentWrapper::State::Used;
-                        _components[lastUsedComponent].state = ComponentWrapper::State::Unused;
-                    } else {
-                        _components[i].state = ComponentWrapper::State::Unused;
-                    }
+                    _components[i].handle = k_invalidHandle;
+                    _components[i].state = ComponentWrapper::State::Invalidated;
+                    firstInvalidatedComponentIndex++;
                 }
-
+            } else if (componentWrapper.state == ComponentWrapper::State::Invalidated) {
+                if (firstInvalidatedComponentIndex > i) {
+                    firstInvalidatedComponentIndex = i;
+                }
             } else {
                 break;
+            }
+        }
+
+        if (firstInvalidatedComponentIndex != _components.size()) {
+            for (; firstInvalidatedComponentIndex < _components.size(); firstInvalidatedComponentIndex++) {
+                _components[firstInvalidatedComponentIndex].state = ComponentWrapper::State::Unused;
             }
         }
 
