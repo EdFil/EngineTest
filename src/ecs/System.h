@@ -104,6 +104,15 @@ public:
         return true;
     }
 
+    Component* getComponent(Handle handle) {
+        if (handle == k_invalidHandle || static_cast<size_t>(handle) > _handles.size()) {
+            std::cout << "[System::getComponent] Invalid handle " << handle << std::endl;
+            return nullptr;
+        }
+
+        return &_components[_handles[handle]].component;
+    }
+
     void checkSystem() {
         std::vector<Handle> checkedHandles;
         for (size_t i = 0; i < _handles.size(); i++) {

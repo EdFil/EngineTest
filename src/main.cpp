@@ -111,11 +111,15 @@ void test2() {
     std::cout << "\n" << "[test2()] Reorder" << std::endl;
     BENCHMARK(system->reorder();)
 
+    TransformComponent* component = system->getComponent(createdHandles[1]);
+    component->set(100, 100 ,100);
+
     std::cout << "End"<< std::endl;
+    delete system;
 }
 
 int main() {
-    test1();
+    test2();
 }
 
 
