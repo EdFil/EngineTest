@@ -55,10 +55,10 @@ public:
     }
 
     void reorder() final {
-//        if (!_needsReorder) {
-//            std::cout << "[TransformSystem::reorder] No reorder needed" << std::endl;
-//            return;
-//        }
+        if (!_needsReorder) {
+            std::cout << "[TransformSystem::reorder] No reorder needed" << std::endl;
+            return;
+        }
 
         size_t firstInvalidatedComponentIndex = _components.size();
         for (size_t i = 0; i < _components.size(); i++) {
@@ -84,6 +84,7 @@ public:
         }
 
         if (firstInvalidatedComponentIndex != _components.size()) {
+            _firstAvailableComponentIndex  = firstInvalidatedComponentIndex;
             for (; firstInvalidatedComponentIndex < _components.size(); firstInvalidatedComponentIndex++) {
                 _components[firstInvalidatedComponentIndex].state = ComponentWrapper::State::Unused;
             }

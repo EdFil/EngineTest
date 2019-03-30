@@ -1,59 +1,86 @@
+#include <chrono>
 #include "ecs/TransformSystem.h"
 
-int main() {
-    TransformSystem* system = new TransformSystem();
 
-    std::cout << "[main.cpp] Initialize System with 5 components" << std::endl;
-    system->initWith(5);
+#define BENCHMARK(__PARAM__) \
+{\
+    auto start = std::chrono::high_resolution_clock::now();\
+    __PARAM__\
+    auto elapsed =  std::chrono::duration_cast<std::chrono::duration<double>>(std::chrono::high_resolution_clock::now() - start);\
+    std::cout << "[TIME] Took "<< elapsed.count() << " stuffs" << std::endl;\
+}
+
+void test1() {
+    auto system = new TransformSystem();
+
+    std::cout << "[test1()] Initialize System with 3 components" << std::endl;
+    system->initWith(3);
     std::cout << std::endl;
 
-    std::cout << "[main.cpp] Update()" << std::endl;
+    std::cout << "[test1()] Update()" << std::endl;
     system->update(0.0f);
     std::cout << std::endl;
 
-    std::cout << "[main.cpp] Create 3 components" << std::endl;
+    std::cout << "[test1()] Create 3 components" << std::endl;
     Handle handle0 = system->createComponent();
     Handle handle1 = system->createComponent();
     Handle handle2 = system->createComponent();
-    Handle handle3 = system->createComponent();
-    Handle handle4 = system->createComponent();
 
     system->checkSystem();
     std::cout << std::endl;
 
-    std::cout << "[main.cpp] Update()" << std::endl;
+    std::cout << "[test1()] Update()" << std::endl;
     system->update(0.0f);
     system->checkSystem();
     std::cout << std::endl;
 
-    std::cout << "[main.cpp] Delete middle component" << std::endl;
+    std::cout << "[test1()] Delete middle component" << std::endl;
     system->releaseComponent(handle1);
-    system->releaseComponent(handle2);
-    system->releaseComponent(handle3);
     system->checkSystem();
     std::cout << std::endl;
 
-    std::cout << "[main.cpp] Update()" << std::endl;
+    std::cout << "[test1()] Update()" << std::endl;
     system->update(0.0f);
     system->checkSystem();
     std::cout << std::endl;
 
-    std::cout << "[main.cpp] Reorder()" << std::endl;
+    std::cout << "[test1()] Reorder()" << std::endl;
     system->reorder();
     system->checkSystem();
     std::cout << std::endl;
 
-    std::cout << "[main.cpp] Update()" << std::endl;
+    std::cout << "[test1()] Update()" << std::endl;
     system->update(0.0f);
     system->checkSystem();
     std::cout << std::endl;
 
-    std::cout << "[main.cpp] Create 1 component()" << std::endl;
+    std::cout << "[test1()] Create 1 component()" << std::endl;
     handle1 = system->createComponent();
     system->checkSystem();
     std::cout << std::endl;
 
-    std::cout << "[main.cpp] Update()" << std::endl;
+    std::cout << "[test1()] Update()" << std::endl;
+    system->update(0.0f);
+    system->checkSystem();
+    std::cout << std::endl;
+
+    std::cout << "[test1()] Remove last and first" << std::endl;
+    system->releaseComponent(handle1);
+    system->releaseComponent(handle0);
+    system->checkSystem();
+    std::cout << std::endl;
+
+    std::cout << "[test1()] Update()" << std::endl;
+    system->update(0.0f);
+    system->checkSystem();
+    std::cout << std::endl;
+
+    std::cout << "[test1()] Reorder()" << std::endl;
+    system->reorder();
+    system->checkSystem();
+    std::cout << std::endl;
+
+    std::cout << "[test1()] Update()" << std::endl;
     system->update(0.0f);
     system->checkSystem();
     std::cout << std::endl;
@@ -62,13 +89,34 @@ int main() {
     (void)handle1;
     (void)handle2;
 
-    std::cout << "[main.cpp] Delete System" << std::endl;
+    std::cout << "[test1()] Delete System" << std::endl;
     delete system;
-
-    return 0;
 }
 
+void test2() {
+    TransformSystem* system = new TransformSystem();
 
+    const size_t numComponents = 1000000;
+    Handle createdHandles[numComponents];
+
+    std::cout << "[test2()] Initialize System with "<< numComponents << " components" << std::endl;
+    BENCHMARK(system->initWith(numComponents);)
+
+    std::cout << "\n" << "[test2()] Create "<< numComponents << " components" << std::endl;
+    BENCHMARK(for(size_t i = 0; i < numComponents; i++) {createdHandles[i] = system->createComponent();})
+
+    std::cout << "\n" << "[test2()] Delete half even index components" << std::endl;
+    BENCHMARK(for(size_t i = 0; i < numComponents; i+=2) {system->releaseComponent(createdHandles[i]);})
+
+    std::cout << "\n" << "[test2()] Reorder" << std::endl;
+    BENCHMARK(system->reorder();)
+
+    std::cout << "End"<< std::endl;
+}
+
+int main() {
+    test1();
+}
 
 
 
