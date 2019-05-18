@@ -10,116 +10,30 @@
     std::cout << "[TIME] Took "<< elapsed.count() << " stuffs" << std::endl;\
 }
 
-void test1() {
-    auto system = new TransformSystem();
-
-    std::cout << "[test1()] Initialize System with 3 components" << std::endl;
-    system->initWith(3);
-    std::cout << std::endl;
-
-    std::cout << "[test1()] Update()" << std::endl;
-    system->update(0.0f);
-    std::cout << std::endl;
-
-    std::cout << "[test1()] Create 3 components" << std::endl;
-    Handle handle0 = system->createComponent();
-    Handle handle1 = system->createComponent();
-    Handle handle2 = system->createComponent();
-
-    system->checkSystem();
-    std::cout << std::endl;
-
-    std::cout << "[test1()] Update()" << std::endl;
-    system->update(0.0f);
-    system->checkSystem();
-    std::cout << std::endl;
-
-    std::cout << "[test1()] Delete middle component" << std::endl;
-    system->releaseComponent(handle1);
-    system->checkSystem();
-    std::cout << std::endl;
-
-    std::cout << "[test1()] Update()" << std::endl;
-    system->update(0.0f);
-    system->checkSystem();
-    std::cout << std::endl;
-
-    std::cout << "[test1()] Reorder()" << std::endl;
-    system->reorder();
-    system->checkSystem();
-    std::cout << std::endl;
-
-    std::cout << "[test1()] Update()" << std::endl;
-    system->update(0.0f);
-    system->checkSystem();
-    std::cout << std::endl;
-
-    std::cout << "[test1()] Create 1 component()" << std::endl;
-    handle1 = system->createComponent();
-    system->checkSystem();
-    std::cout << std::endl;
-
-    std::cout << "[test1()] Update()" << std::endl;
-    system->update(0.0f);
-    system->checkSystem();
-    std::cout << std::endl;
-
-    std::cout << "[test1()] Remove last and first" << std::endl;
-    system->releaseComponent(handle1);
-    system->releaseComponent(handle0);
-    system->checkSystem();
-    std::cout << std::endl;
-
-    std::cout << "[test1()] Update()" << std::endl;
-    system->update(0.0f);
-    system->checkSystem();
-    std::cout << std::endl;
-
-    std::cout << "[test1()] Reorder()" << std::endl;
-    system->reorder();
-    system->checkSystem();
-    std::cout << std::endl;
-
-    std::cout << "[test1()] Update()" << std::endl;
-    system->update(0.0f);
-    system->checkSystem();
-    std::cout << std::endl;
-
-    (void)handle0;
-    (void)handle1;
-    (void)handle2;
-
-    std::cout << "[test1()] Delete System" << std::endl;
-    delete system;
-}
-
-void test2() {
-    TransformSystem* system = new TransformSystem();
-
-    const size_t numComponents = 1000000;
-    Handle createdHandles[numComponents];
-
-    std::cout << "[test2()] Initialize System with "<< numComponents << " components" << std::endl;
-    BENCHMARK(system->initWith(numComponents);)
-
-    std::cout << "\n" << "[test2()] Create "<< numComponents << " components" << std::endl;
-    BENCHMARK(for(size_t i = 0; i < numComponents; i++) {createdHandles[i] = system->createComponent();})
-
-    std::cout << "\n" << "[test2()] Delete half even index components" << std::endl;
-    BENCHMARK(for(size_t i = 0; i < numComponents; i+=2) {system->releaseComponent(createdHandles[i]);})
-
-    std::cout << "\n" << "[test2()] Reorder" << std::endl;
-    BENCHMARK(system->reorder();)
-
-    TransformComponent* component = system->getComponent(createdHandles[1]);
-    component->set(100, 100 ,100);
-
-    std::cout << "End"<< std::endl;
-    delete system;
-}
-
 int main() {
-    test2();
+    TransformSystem system;
+    system.initWithCapacity(100);
+
+    const size_t phase1 = 99;
+    TransformComponentHandle phase1Handles[phase1];
+    for (size_t i = 0; i < phase1; i++) {
+        phase1Handles[i] = system.createComponent();
+    }
+
+    system.createComponent();
+    system.createComponent();
+
+    const size_t phase2 = 3;
+    TransformComponentHandle phase2Handles[phase2] = { 12, 3, 3};
+    for (size_t i = 0; i < phase2; i++) {
+        system.destroyComponent(phase2Handles[i]);
+    }
+
+    const size_t phase3 = 54;
+    TransformComponentHandle phase3Handles[phase3];
+    for (size_t i = 0; i < phase3; i++) {
+        phase3Handles[i] = system.createComponent();
+    }
 }
 
 

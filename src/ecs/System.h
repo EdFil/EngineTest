@@ -6,8 +6,6 @@
 #include <unordered_map>
 #include <cstring>
 
-#define DEBUG 1
-
 using ComponentIndex = int32_t;
 using Handle = int32_t;
 
@@ -162,5 +160,4 @@ protected:
     ComponentIndex _firstAvailableComponentIndex = k_invalidIndex;
     Handle _firstAvailableHandleIndex = k_invalidHandle;
     bool _needsReorder = false;
-    bool _padding[3];
 };

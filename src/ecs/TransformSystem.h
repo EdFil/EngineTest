@@ -17,9 +17,9 @@ struct TransformComponent {
     TransformComponent() : x(0.0f), y(0.0f), z(0.0f) { DP_TRANSFORM(std::cout << "[TransformComponent::Constructor]" << std::endl;) }
     TransformComponent(float x, float y, float z) : x(x), y(y), z(z)  { DP_TRANSFORM(std::cout << "[TransformComponent::ConstructorXYZ]" << std::endl;) }
     TransformComponent(const TransformComponent& rhs) : x(rhs.x), y(rhs.y), z(rhs.z) { DP_TRANSFORM(std::cout << "[TransformComponent::CopyConstructor]" << std::endl;) }
-    TransformComponent(const TransformComponent&& rhs) : x(rhs.x), y(rhs.y), z(rhs.z) { DP_TRANSFORM(std::cout << "[TransformComponent::MoveConstructor]" << std::endl;) }
+    TransformComponent(TransformComponent&& rhs) noexcept : x(rhs.x), y(rhs.y), z(rhs.z) { DP_TRANSFORM(std::cout << "[TransformComponent::MoveConstructor]" << std::endl;) }
     TransformComponent& operator=(const TransformComponent& rhs) { DP_TRANSFORM(std::cout << "[TransformComponent::CopyAssignmentOperator]" << std::endl;) x = rhs.x; y = rhs.y;  z = rhs.z; return *this; }
-    TransformComponent& operator=(const TransformComponent&& rhs) { DP_TRANSFORM(std::cout << "[TransformComponent::MoveAssignmentOperator]" << std::endl;) x = rhs.x; y = rhs.y;  z = rhs.z; return *this; }
+    TransformComponent& operator=(TransformComponent&& rhs) noexcept { DP_TRANSFORM(std::cout << "[TransformComponent::MoveAssignmentOperator]" << std::endl;) x = rhs.x; y = rhs.y;  z = rhs.z; return *this; }
     ~TransformComponent() { DP_TRANSFORM(std::cout << "[TransformComponent::Destructor]" << std::endl;) }
 
     void set(float _x, float _y, float _z) { x = _x; y = _y; z = _z; }
@@ -27,70 +27,37 @@ struct TransformComponent {
     float x, y, z;
 };
 
-class TransformSystem : public System<TransformComponent> {
+using TransformComponentHandle = int16_t;
+const TransformComponentHandle k_invalidComponentHandle = -1;
+
+enum class ComponentStatus : int8_t {
+    Free = 0, Used = 1
+};
+
+struct TransformWrapper {
+    TransformComponent component;
+    TransformComponentHandle nextComponentHandle;
+    ComponentStatus status;
+};
+
+class TransformSystem {
 public:
+    static TransformComponent s_invalidTransformComponent;
+    TransformComponentHandle _nextComponentHandle;
+    std::vector<TransformWrapper> _components;
 
-    ~TransformSystem() final = default;
 
-    void initWith(size_t capacity) final {
-        System::initWith(capacity);
-        for (size_t i = 0; i < _components.size(); i++) {
-            _components[i].component.set(static_cast<float>(i), static_cast<float>(i), static_cast<float>(i));
-        }
-    }
+    TransformSystem() = default;
+    ~TransformSystem() = default;
 
-    void update(float) final {
-        for (ComponentWrapper& componentWrapper : _components) {
-            if (componentWrapper.state == ComponentWrapper::State::Unused) {
-                std::cout << "Unused" << std::endl;
-                continue;
-            } else if (componentWrapper.state == ComponentWrapper::State::Invalidated) {
-                std::cout << "Invalid" << std::endl;
-                continue;
-            }
+    void initWithCapacity(const TransformComponentHandle capacity);
+    TransformComponentHandle createComponent();
+    void destroyComponent(const TransformComponentHandle componentHandle);
+    TransformComponent& getComponent(const TransformComponentHandle componentHandle);
 
-            std::cout << "Transform [" << componentWrapper.component.x << ", " << componentWrapper.component.y << ", "
-            << componentWrapper.component.z << "]" << std::endl;
-        }
-    }
-
-    void reorder() final {
-        if (!_needsReorder) {
-            std::cout << "[TransformSystem::reorder] No reorder needed" << std::endl;
-            return;
-        }
-
-        size_t firstInvalidatedComponentIndex = _components.size();
-        for (size_t i = 0; i < _components.size(); i++) {
-            ComponentWrapper& componentWrapper = _components[i];
-            if (componentWrapper.state == ComponentWrapper::State::Used) {
-                if (firstInvalidatedComponentIndex < i) {
-                    _components[firstInvalidatedComponentIndex].component = _components[i].component;
-                    _components[firstInvalidatedComponentIndex].state = ComponentWrapper::State::Used;
-                    _components[firstInvalidatedComponentIndex].handle = _components[i].handle;
-                    _handles[_components[firstInvalidatedComponentIndex].handle] = static_cast<Handle>(firstInvalidatedComponentIndex);
-
-                    _components[i].handle = k_invalidHandle;
-                    _components[i].state = ComponentWrapper::State::Invalidated;
-                    firstInvalidatedComponentIndex++;
-                }
-            } else if (componentWrapper.state == ComponentWrapper::State::Invalidated) {
-                if (firstInvalidatedComponentIndex > i) {
-                    firstInvalidatedComponentIndex = i;
-                }
-            } else {
-                break;
-            }
-        }
-
-        if (firstInvalidatedComponentIndex != _components.size()) {
-            _firstAvailableComponentIndex  = firstInvalidatedComponentIndex;
-            for (; firstInvalidatedComponentIndex < _components.size(); firstInvalidatedComponentIndex++) {
-                _components[firstInvalidatedComponentIndex].state = ComponentWrapper::State::Unused;
-            }
-        }
-
-        _needsReorder = false;
-    }
-
+private:
+    TransformSystem(const TransformSystem&& rhs) = delete;
+    TransformSystem( TransformSystem&& rhs) = delete;
+    TransformSystem& operator=(const TransformSystem& rhs) = delete;
+    TransformSystem& operator=(const TransformSystem&& rhs) = delete;
 };
