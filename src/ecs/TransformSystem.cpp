@@ -7,9 +7,7 @@
 #include <iostream>
 #include <cassert>
 
-TransformComponent TransformSystem::s_invalidTransformComponent = {};
-
-void TransformSystem::initWithCapacity(TransformComponentHandle capacity) {
+void TransformSystem::initWithCapacity(int16_t capacity) {
     if (capacity <= 0) {
         std::cout << "[TransformSystem::initWithCapacity] Error: Capacity can not be <= 0" << std::endl;
     }
@@ -22,52 +20,52 @@ void TransformSystem::initWithCapacity(TransformComponentHandle capacity) {
     }
 }
 
-TransformComponentHandle TransformSystem::createComponent() {
-    if (_nextComponentHandle >= static_cast<TransformComponentHandle>(_components.size())) {
+GlobalHandle TransformSystem::createComponent() {
+    if (_nextComponentHandle >= static_cast<LocalHandle>(_components.size())) {
         std::cout << "[TransformSystem::createComponent] Error: Component vector full. Resize not implemented yet" << std::endl;
-        return k_invalidComponentHandle;
+        return -1;
     }
 
     if (_nextComponentHandle < 0) {
         std::cout << "[TransformSystem::createComponent] Error: No more space for components" << std::endl;
-        return k_invalidComponentHandle;
+        return -1;
     }
 
     assert(_components[_nextComponentHandle].status == ComponentStatus::Free);
 
-    TransformComponentHandle handleToReturn = _nextComponentHandle;
-    _nextComponentHandle = _components[handleToReturn].nextComponentHandle;
-    _components[handleToReturn].status = ComponentStatus::Used;
+    LocalHandle localHandleToReturn = _nextComponentHandle;
+    _nextComponentHandle = _components[localHandleToReturn].nextComponentHandle;
+    _components[localHandleToReturn].status = ComponentStatus::Used;
 
-    std::cout << "Create component on Handle " << handleToReturn << " next is " << _nextComponentHandle << std::endl;
+    std::cout << "Create component on Handle " << localHandleToReturn << " next is " << _nextComponentHandle << std::endl;
 
-    return handleToReturn;
+    return transform_system_globals::k_transformHandlePrefix | localHandleToReturn;
 }
 
-void TransformSystem::destroyComponent(const TransformComponentHandle componentHandle) {
-    if (_nextComponentHandle > static_cast<TransformComponentHandle>(_components.size()) || _nextComponentHandle < 0) {
+void TransformSystem::destroyComponent(const GlobalHandle globalHandle) {
+    if (_nextComponentHandle > static_cast<LocalHandle>(_components.size()) || _nextComponentHandle < 0) {
         std::cout << "[TransformSystem::destroyComponent] Error: Invalid component handle" << std::endl;
         return;
     }
 
-    if (_components[componentHandle].status == ComponentStatus::Free) {
+    const LocalHandle localHandle = static_cast<LocalHandle>(globalHandle);
+    if (_components[localHandle].status == ComponentStatus::Free) {
         std::cout << "[TransformSystem::destroyComponent] Warning: Component was already Free" << std::endl;
         return;
     }
 
+    _components[localHandle].status = ComponentStatus::Free;
+    _components[localHandle].nextComponentHandle = _nextComponentHandle;
+    _nextComponentHandle = static_cast<LocalHandle>(localHandle);
 
-    _components[componentHandle].status = ComponentStatus::Free;
-    _components[componentHandle].nextComponentHandle = _nextComponentHandle;
-    _nextComponentHandle = componentHandle;
-
-    std::cout << "Delete component on Handle " << componentHandle << " next is " << _nextComponentHandle << std::endl;
+    std::cout << "Delete component on Handle " << localHandle << " next is " << _nextComponentHandle << std::endl;
 }
 
-TransformComponent& TransformSystem::getComponent(const TransformComponentHandle componentHandle) {
-    if (_nextComponentHandle > static_cast<TransformComponentHandle>(_components.size()) || _nextComponentHandle < 0) {
+TransformComponent& TransformSystem::getComponent(const GlobalHandle globalHandle) {
+    if (globalHandle > static_cast<LocalHandle >(_components.size()) || globalHandle < 0) {
         std::cout << "[TransformSystem::getComponent] Error: Invalid handle" << std::endl;
-        return s_invalidTransformComponent;
+        return transform_system_globals::g_invalidTransformComponent;
     }
 
-    return _components[componentHandle].component;
+    return _components[static_cast<LocalHandle>(globalHandle)].component;
 }

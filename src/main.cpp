@@ -15,7 +15,7 @@ int main() {
     system.initWithCapacity(100);
 
     const size_t phase1 = 99;
-    TransformComponentHandle phase1Handles[phase1];
+    GlobalHandle phase1Handles[phase1];
     for (size_t i = 0; i < phase1; i++) {
         phase1Handles[i] = system.createComponent();
     }
@@ -24,13 +24,13 @@ int main() {
     system.createComponent();
 
     const size_t phase2 = 3;
-    TransformComponentHandle phase2Handles[phase2] = { 12, 3, 3};
+    GlobalHandle phase2Handles[phase2] = { phase1Handles[12], phase1Handles[1], phase1Handles[30]};
     for (size_t i = 0; i < phase2; i++) {
         system.destroyComponent(phase2Handles[i]);
     }
 
     const size_t phase3 = 54;
-    TransformComponentHandle phase3Handles[phase3];
+    GlobalHandle phase3Handles[phase3];
     for (size_t i = 0; i < phase3; i++) {
         phase3Handles[i] = system.createComponent();
     }
