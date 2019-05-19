@@ -49,8 +49,8 @@ message (STATUS "CMAKE_CXX_FLAGS_RELEASE=${CMAKE_CXX_FLAGS_RELEASE}")
 # Dependencies
 # ============
 
-#set(RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources" CACHE PATH "Resources Path" FORCE)
-#add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/.." "${CMAKE_BINARY_DIR}/EngineBuild")
+set(RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources" CACHE PATH "Resources Path" FORCE)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/engine")
 
 # ================
 # Source gathering
@@ -63,14 +63,14 @@ file(GLOB_RECURSE SOURCES
 # Make library
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-#target_link_libraries(Engine_TESTS Engine_Static )
+target_link_libraries(${PROJECT_NAME}  Engine_Static)
 
 # Include directotories
 target_include_directories(${PROJECT_NAME} PUBLIC ${SOURCE_DIR})
 
-## Copy resources to build dir
-#add_custom_command(TARGET Engine_TESTS POST_BUILD
-#		COMMAND ${CMAKE_COMMAND} -E copy_directory ${RESOURCES_DIR} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources)
+# Copy resources to build dir
+add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory ${RESOURCES_DIR} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources)
 
 # Source group generation for IDEs
 foreach(SOURCE IN ITEMS ${SOURCES})
