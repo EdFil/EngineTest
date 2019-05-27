@@ -3,6 +3,7 @@
 #include <file/FileManager.hpp>
 #include <SDL_log.h>
 #include <scene/Scene.hpp>
+#include <TextureManager.hpp>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -10,16 +11,27 @@
 #include <string>
 
 class MyScene : public Scene {
+	Node* _node = nullptr;
+
 	void onCreated() override {	
 		SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "My onCreate()");
+
+		SDL_Texture* texture = _engine->textureManager()->loadTexture("AnotherImage.png");
+		
+		_node = new Node();
+
+		const GlobalHandle transformComponentHandle = _engine->transformSystem().create({ 100.0f, 100.0f, 0.0f });
+		_node->addComponentHandle(transformComponentHandle);
+
+		const GlobalHandle spriteComponentHandle = _engine->spriteSystem().createComponent(transformComponentHandle, texture);
+		_node->addComponentHandle(spriteComponentHandle);
+		
 	}
 
 	void onDestroy() override {
-		SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "My onDestroy()");
-	}
+		delete _node;
 
-	void update(float) override {	
-		SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "My update()");
+		SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "My onDestroy()");
 	}
 };
 
