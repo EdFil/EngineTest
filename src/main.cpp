@@ -9,34 +9,46 @@
 #include <stb_image.h>
 
 #include <string>
+#include <ctime>
 
 class MyScene : public Scene {
-	Node* _node = nullptr;
+	static const int k_numNodes = 11;
+	Node* _nodes[k_numNodes] = {};
 
 	void onCreated() override {	
 		SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "My onCreate()");
 
 		SDL_Texture* texture = _engine->textureManager()->loadTexture("AnotherImage.png");
-		
-		_node = new Node();
 
-		const GlobalHandle transformComponentHandle = _engine->transformSystem().create({ 100.0f, 100.0f, 0.0f });
-		_node->addComponentHandle(transformComponentHandle);
+		for (int i = 0; i < k_numNodes; i++) {
 
-		const GlobalHandle spriteComponentHandle = _engine->spriteSystem().createComponent(transformComponentHandle, texture);
-		_node->addComponentHandle(spriteComponentHandle);
-		
+			Node* node = new Node();
+
+			const GlobalHandle transformComponentHandle = _engine->transformSystem().create();
+			node->addComponentHandle(transformComponentHandle);
+
+			const GlobalHandle spriteComponentHandle = _engine->spriteSystem().createComponent(transformComponentHandle, texture);
+			node->addComponentHandle(spriteComponentHandle);
+
+			const GlobalHandle randomMovementHandle = _engine->randomMovementSystem().createComponent(transformComponentHandle, spriteComponentHandle);
+			node->addComponentHandle(randomMovementHandle);
+
+			_nodes[i] = node;
+		}
 	}
 
 	void onDestroy() override {
-		delete _node;
-
+		for (int i = 0; i < k_numNodes; i++) {
+			delete _nodes[i];
+		}
 		SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "My onDestroy()");
 	}
 };
 
 int main()
 {
+	srand(time(nullptr));
+
 	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 
     FileManager::initialize();
