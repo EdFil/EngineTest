@@ -6,7 +6,6 @@ set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
 set (CMAKE_CXX_STANDARD 17)
-set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/engine/cmake")
 
 set(CMAKE_PROJECT_VERSION "")
 set(CMAKE_PROJECT_VERSION_MAJOR "")
@@ -40,7 +39,7 @@ if (MSVC)
         set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od /RTC1 /DDEBUG /Wall")
         set(CMAKE_CXX_FLAGS_RELEASE "/MD /Ox /Ob2 /DRELEASE")
 else()
-		set(CMAKE_CXX_FLAGS "-Wall -Wextra  -pedantic -fno-exceptions")
+		set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -pedantic -fno-exceptions")
         set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -DDEBUG")
         set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DRELEASE")
 endif()
@@ -53,21 +52,15 @@ message (STATUS "CMAKE_CXX_FLAGS_RELEASE=${CMAKE_CXX_FLAGS_RELEASE}")
 # Dependencies
 # ============
 
-set(DEPENDENCY_INSTALL_DIR "${CMAKE_CURRENT_SOURCE_DIR}/dependencies")
+# Engine
 set(RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources" CACHE PATH "Resources Path" FORCE)
-
-# add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/engine/dependencies/SDL2")
-
-# configure_file("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/engine/dependencies/SDL2/CMakeLists.txt"  "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/engine/dependencies/SDL2/CMakeLists2.txt")
-# include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/engine/dependencies/SDL2/CMakeLists.txt")
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/engine/dependencies/SDL2")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/engine")
 
 # ================
 # Source gathering
 # ================
 
 set (SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
-set (SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/test")
 
 file(GLOB_RECURSE SOURCES
         "${SOURCE_DIR}/*.cpp" "${SOURCE_DIR}/*.c"
@@ -76,23 +69,14 @@ file(GLOB_RECURSE SOURCES
 # Make library
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-#target_link_libraries(${PROJECT_NAME}  Engine_Static)
-target_link_directories(${PROJECT_NAME} PUBLIC ${CMAKE_BINARY_DIR}/lib)
-target_link_libraries(${PROJECT_NAME} 
-    PRIVATE
-    SDL2
-    SDL2main
-)
+# Add libs/projects to link against
+target_link_libraries(${PROJECT_NAME} Engine_Static)
 
-# Include directotories
-target_include_directories(${PROJECT_NAME} 
-    PRIVATE
-    ${SOURCE_DIR} 
-    ${CMAKE_BINARY_DIR}/include
-)
+# Add include directories
+target_include_directories(${PROJECT_NAME} PRIVATE ${SOURCE_DIR})
 
 # Copy resources to build dir
-add_custom_command(TARGET ${PROJECT_NAME}  POST_BUILD
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 		COMMAND ${CMAKE_COMMAND} -E copy_directory ${RESOURCES_DIR} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources)
 
 # Source group generation for IDEs
