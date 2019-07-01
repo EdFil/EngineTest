@@ -38,8 +38,8 @@ bool EntityManager::resize(uint32_t capacity) {
 
     if (capacity == 0) {
         SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "[EntityManager::resize] Resize to 0. Deleting memory...");
-        free(m_pEntities);
-        free(m_pGeneration);
+        SDL_free(m_pEntities);
+		SDL_free(m_pGeneration);
         m_pEntities = nullptr;
         m_pGeneration = nullptr;
         m_capacity = 0;
@@ -47,8 +47,8 @@ bool EntityManager::resize(uint32_t capacity) {
     }
 
     // Creation and copy of data
-    EntityID* newEntityData = (EntityID*)realloc(m_pEntities, sizeof(EntityID) * capacity);
-    uint8_t* newGenerationData = (uint8_t*)realloc(m_pGeneration, sizeof(uint8_t) * capacity);
+    EntityID* newEntityData = (EntityID*)SDL_realloc(m_pEntities, sizeof(EntityID) * capacity);
+    uint8_t* newGenerationData = (uint8_t*)SDL_realloc(m_pGeneration, sizeof(uint8_t) * capacity);
     if (newEntityData != nullptr && newGenerationData != nullptr) {
         if (capacity > m_capacity) {
             for (uint32_t i = m_capacity; i < capacity; i++) {
