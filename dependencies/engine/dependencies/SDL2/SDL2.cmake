@@ -12,8 +12,7 @@ if (${USE_PREBUILT_LIBRARIES})
         BUILD_COMMAND     ""
         INSTALL_COMMAND   ""
         TEST_COMMAND      ""
-)
-
+    )
 else()
     ExternalProject_Add(SDL2
         URL              https://www.libsdl.org/release/SDL2-2.0.9.tar.gz

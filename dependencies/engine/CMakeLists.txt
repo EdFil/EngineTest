@@ -5,14 +5,6 @@ cmake_minimum_required(VERSION 2.8.12)
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-message(STATUS CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE})
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    add_definitions(-DRELEASE)
-else()
-    add_definitions(-DDEBUG)
-endif()
-
-
 # CXX Flags
 if(MSVC)
 	set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /experimental:external /external:anglebrackets /external:W0 /Wall /GR /EHsc")
@@ -59,15 +51,8 @@ target_include_directories(Engine_Static
 target_link_libraries(Engine_Static
 		PUBLIC
 		SDL2 SDL2main # SDL
-#		gtest gtest_main # gtest
 		stb_static # stb
 )
-
-if(${CMAKE_BUILD_TYPE} STREQUAL "Release")
-	target_compile_definitions(Engine_Static PUBLIC RELEASE)
-else()
-	target_compile_definitions(Engine_Static PUBLIC DEBUG)
-endif()
 
 # Source group generation for IDEs
 foreach(SOURCE IN ITEMS ${SOURCES})
