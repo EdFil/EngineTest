@@ -26,6 +26,7 @@ struct EntityID {
     uint32_t isAlive() const { return (m_id & ENTITY_IS_ALIVE_MASK) != 0; }
     operator uint32_t() const { return m_id; }
 };
+using GenerationId = uint8_t;
 
 static const EntityID k_invalidEntity = EntityID{0xFFFF};
 
@@ -45,8 +46,9 @@ public:
     bool isValid(const EntityID& entity) const;
 
 private:
+	void* m_pData;
     EntityID* m_pEntities;
-    uint8_t* m_pGeneration;
+    GenerationId* m_pGeneration;
     uint32_t m_capacity;
-    uint32_t m_nextIndex;
+    uint32_t m_nextAvailableEntityIndex;
 };
