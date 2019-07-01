@@ -17,6 +17,10 @@ class Engine : public ApplicationEventDelegate {
 public:
     Engine();
     ~Engine();
+	Engine(const Engine& rhs) = delete;
+	Engine(const Engine&& rhs) = delete;
+	Engine& operator=(const Engine& rhs) = delete;
+	Engine& operator=(const Engine&& rhs) = delete;
 
     bool initialize();
     void cleanup();
@@ -55,4 +59,5 @@ private:
 //	RandomMovementSystem _randomMovementSystem;
 
     bool _isRunning = false;
+	SDL_UNUSED bool _padding[3];
 };

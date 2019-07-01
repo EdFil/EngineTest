@@ -48,7 +48,6 @@ public:
 int main()
 {
 	srand(time(nullptr));
-	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 
     Engine* engine = new Engine();
     if(engine->initialize()) {

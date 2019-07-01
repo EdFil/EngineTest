@@ -33,8 +33,8 @@ class EntityManager {
 public:
     EntityManager();
     ~EntityManager();
+    EntityManager(const EntityManager& rhs) = delete;
     EntityManager(const EntityManager&& rhs) = delete;
-    EntityManager(EntityManager&& rhs) = delete;
     EntityManager& operator=(const EntityManager& rhs) = delete;
     EntityManager& operator=(const EntityManager&& rhs) = delete;
 

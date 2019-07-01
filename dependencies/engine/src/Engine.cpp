@@ -9,14 +9,12 @@
 #include "TextureManager.hpp"
 
 
-Engine::Engine() {}// : _spriteSystem(*this), _randomMovementSystem(*this) {}
+Engine::Engine() : _padding() {}// : _spriteSystem(*this), _randomMovementSystem(*this) {}
 Engine::~Engine() {}
 
 bool Engine::initialize() {
-	srand(time(nullptr));
-
 #ifdef DEBUG
-	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
+	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 #endif
 
 	// Init SDL
