@@ -30,6 +30,7 @@ public:
         }
 
         for (auto& m_entity : m_entities) {
+            (void)m_entity;
             _engine->entityManager().createEntity();
         }
 

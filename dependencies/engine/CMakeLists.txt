@@ -28,9 +28,7 @@ endif()
 # ============
 
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2")
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/googletest")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/stb")
-
 
 if(NOT RESOURCES_DIR)
 	message(WARNING "RESOURCES_DIR not set")
