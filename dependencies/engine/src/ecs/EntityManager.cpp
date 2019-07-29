@@ -5,16 +5,15 @@
 
 // Helper functions
 
-uint32_t isAliveValueToMask(bool isAlive) { return isAlive ? ENTITY_IS_ALIVE_MASK : 0; }
 uint32_t generationValueToMask(uint8_t generation) { return generation << ENTITY_INDEX_BITS; }
 
-uint32_t make_id(bool isAlive, uint8_t generation, uint32_t index) {
-    return isAliveValueToMask(isAlive) | generationValueToMask(generation) | index;
+uint32_t make_id(uint8_t generation, uint32_t index) {
+    return generationValueToMask(generation) | index;
 }
 
 EntityManager::EntityManager() : m_pData(nullptr), m_pEntities(nullptr), m_pGeneration(nullptr), m_capacity(0), m_nextAvailableEntityIndex(0) {
-    static_assert(ENTITY_IS_ALIVE_BITS + ENTITY_GENERATION_BITS + ENTITY_INDEX_BITS == 32);
-    static_assert(ENTITY_IS_ALIVE_MASK + ENTITY_GENERATION_MASK + ENTITY_INDEX_MASK == UINT32_MAX);
+    static_assert(ENTITY_GENERATION_BITS + ENTITY_INDEX_BITS == 32);
+    static_assert(ENTITY_GENERATION_MASK + ENTITY_INDEX_MASK == UINT32_MAX);
 }
 
 EntityManager::~EntityManager() {
@@ -89,7 +88,7 @@ EntityID EntityManager::createEntity() {
     GenerationId* generation = m_pGeneration + m_nextAvailableEntityIndex;
 
     uint32_t newAvailableIndex = *reinterpret_cast<uint32_t*>(entityToReturn);
-    entityToReturn->m_id = make_id(true, *generation, m_nextAvailableEntityIndex);
+    entityToReturn->m_id = make_id(*generation, m_nextAvailableEntityIndex);
     m_nextAvailableEntityIndex = newAvailableIndex;
 
     return *entityToReturn;
@@ -109,11 +108,7 @@ void EntityManager::destroyEntity(const EntityID entity) {
 }
 
 bool EntityManager::isValid(const EntityID& entity) const {
-    if (entity.isAlive()) {
-        const uint32_t index = entity.index();
-        return index <= m_capacity && entity.generation() == m_pGeneration[index];
-    }
-
-    return false;
+    const uint32_t index = entity.index();
+    return index <= m_capacity && entity.generation() == m_pGeneration[index];
 }
 

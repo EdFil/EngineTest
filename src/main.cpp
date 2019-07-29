@@ -49,13 +49,13 @@ int main()
 {
 	srand(time(nullptr));
 
-    Engine* engine = new Engine();
-    if(engine->initialize()) {
-        engine->setScene(std::make_unique<MyScene>());
-        engine->run();
-    }
+    // Engine* engine = new Engine();
+    // if(engine->initialize()) {
+    //     engine->setScene(std::make_unique<MyScene>());
+    //     engine->run();
+    // }
 
-    delete engine;
+    // delete engine;
 
     return 0;
 }
