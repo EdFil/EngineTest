@@ -3,17 +3,24 @@
 #include <SDL_log.h>
 #include <SDL_assert.h>
 
+const uint8_t entity_manager::kEntityIndexBits = 24;
+const uint8_t entity_manager::kEntityGenerationBits = 8;
+const uint32_t entity_manager::kEntityIndexMask = 0x00FFFFFF;
+const uint32_t entity_manager::kEntityGenerationMask = 0xFF000000;
+const uint32_t entity_manager::kEntityGenerationMaxValue = kEntityGenerationBits >> kEntityIndexBits;
+const EntityID entity_manager::k_invalidEntity{0xFFFF};
+
 // Helper functions
 
-uint32_t generationValueToMask(uint8_t generation) { return generation << ENTITY_INDEX_BITS; }
+constexpr uint32_t generationValueToMask(uint8_t generation) { return generation << entity_manager::kEntityIndexBits; }
 
-uint32_t make_id(uint8_t generation, uint32_t index) {
+constexpr uint32_t make_id(uint8_t generation, uint32_t index) {
     return generationValueToMask(generation) | index;
 }
 
 EntityManager::EntityManager() : m_pData(nullptr), m_pEntities(nullptr), m_pGeneration(nullptr), m_capacity(0), m_nextAvailableEntityIndex(0) {
-    static_assert(ENTITY_GENERATION_BITS + ENTITY_INDEX_BITS == 32);
-    static_assert(ENTITY_GENERATION_MASK + ENTITY_INDEX_MASK == UINT32_MAX);
+    static_assert(entity_manager::kEntityGenerationBits + entity_manager::kEntityIndexBits == 32);
+    static_assert(entity_manager::kEntityGenerationMask + entity_manager::kEntityIndexMask == UINT32_MAX);
 }
 
 EntityManager::~EntityManager() {
@@ -25,9 +32,9 @@ bool EntityManager::initWithCapacity(uint32_t capacity) {
 }
 
 bool EntityManager::resize(uint32_t capacity) {
-    if (capacity > k_localIndex) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "[EntityManager::resize]  Trying to create %d out of a max of %d. Clamping...", capacity, ENTITY_INDEX_MASK);
-        capacity = ENTITY_INDEX_MASK;
+    if (capacity > entity_manager::kEntityIndexMask) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "[EntityManager::resize]  Trying to create %d out of a max of %d. Clamping...", capacity, entity_manager::kEntityIndexMask);
+        capacity = entity_manager::kEntityIndexMask;
     }
 
     if (capacity == m_capacity) {
@@ -80,7 +87,7 @@ EntityID EntityManager::createEntity() {
     if (m_nextAvailableEntityIndex >= m_capacity) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "[EntityManager::createEntity] No more entities available, resizing...");
         if (!resize(m_capacity * 2)) {
-            return k_invalidEntity;
+            return entity_manager::k_invalidEntity;
         }
     }
 
@@ -99,7 +106,7 @@ void EntityManager::destroyEntity(const EntityID entity) {
 
     uint32_t index = entity.index();
     m_pGeneration[index]++;
-    if (m_pGeneration[index] >= ENTITY_GENERATION_MAX_VALUE) {
+    if (m_pGeneration[index] >= entity_manager::kEntityGenerationMaxValue) {
         m_pGeneration[index] = 0;
     }
 

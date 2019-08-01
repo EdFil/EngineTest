@@ -1,6 +1,6 @@
 #pragma once
 
-#include "ECS.hpp"
+#include <stdint.h>
 
 // EntityID breakdown. 32 bit unsigned integer
 //
@@ -9,22 +9,30 @@
 //          ^                   ^
 //      Generation          LocalIndex
 
-#define ENTITY_INDEX_BITS 24u
-#define ENTITY_INDEX_MASK 0x00FFFFFFu
-#define ENTITY_GENERATION_BITS 8u
-#define ENTITY_GENERATION_MASK 0xFF000000u
-#define ENTITY_GENERATION_MAX_VALUE ENTITY_GENERATION_MASK >> ENTITY_INDEX_BITS
+// Memory layout
+//
+// | EntityID[0], EntityID[1]         ... EntityID[N]     |
+// | GenerationID[0], GenerationID[1] ... GenerationID[N] |
+
+struct EntityID;
+namespace entity_manager {
+    extern const uint8_t kEntityIndexBits;
+    extern const uint8_t kEntityGenerationBits;
+    extern const uint32_t kEntityIndexMask;
+    extern const uint32_t kEntityGenerationMask;
+    extern const uint32_t kEntityGenerationMaxValue;
+    
+    extern const EntityID k_invalidEntity;
+}
 
 struct EntityID {
     uint32_t m_id;
 
-    uint32_t index() const { return m_id & ENTITY_INDEX_MASK; }
-    uint8_t generation() const { return static_cast<uint8_t >((m_id & ENTITY_GENERATION_MASK) >> ENTITY_INDEX_BITS); }
+    uint32_t index() const { return m_id & entity_manager::kEntityIndexMask; }
+    uint8_t generation() const { return static_cast<uint8_t >((m_id & entity_manager::kEntityGenerationMask) >> entity_manager::kEntityIndexBits); }
     operator uint32_t() const { return m_id; }
 };
 using GenerationId = uint8_t;
-
-static const EntityID k_invalidEntity = EntityID{0xFFFF};
 
 class EntityManager {
 public:
