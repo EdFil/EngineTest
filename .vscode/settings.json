@@ -57,7 +57,17 @@
         "type_traits": "cpp",
         "typeinfo": "cpp",
         "utility": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "array": "cpp",
+        "__hash_table": "cpp",
+        "random": "cpp",
+        "unordered_map": "cpp",
+        "*.tcc": "cpp",
+        "clocale": "cpp",
+        "fstream": "cpp",
+        "sstream": "cpp",
+        "bit": "cpp",
+        "numeric": "cpp"
     },
     "cmake.configureOnOpen": true
 }

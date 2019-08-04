@@ -1,7 +1,7 @@
 #include <Engine.hpp>
 #include <Constants.hpp>
 
-#include <SDL_log.h>
+#include <SDL.h>
 
 #include <string>
 #include <ctime>
@@ -45,8 +45,56 @@ public:
 
 };
 
+#include <container/PODArray.hpp>
+
+struct TestStruct {
+    float health;
+    int number;
+
+    // TestStruct() : health(0.0f), number(0) { SDL_Log("Constructor1"); }
+    // TestStruct(float health, int number) : health(health), number(number) { SDL_Log("Constructor2"); }
+    // TestStruct(const TestStruct&) noexcept { SDL_Log("Copy Constructor"); }
+    // TestStruct(TestStruct&&) noexcept { SDL_Log("Move Constructor"); }
+    // TestStruct& operator=(const TestStruct&) { SDL_Log("Copy Operator"); return *this; }
+    // TestStruct& operator=(TestStruct&&) noexcept { SDL_Log("Move Operator"); return *this; }
+    // ~TestStruct() { SDL_Log("Destructor"); }
+};
+
+#include <chrono>
+
 int main()
 {
+    
+    {
+        auto timepoint = std::chrono::high_resolution_clock::now();
+        PODArray<TestStruct> testArray(10000);
+        for (int i = 0; i < 10000; i++) {
+            testArray.push_back({1.0f, i});
+        }
+        SDL_Log("Took %ld", std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - timepoint).count());
+    }
+
+    {
+        auto timepoint = std::chrono::high_resolution_clock::now();
+        PODArray<TestStruct> testArray2(10000);
+        for (int i = 0; i < 10000; i++) {
+            TestStruct& test = testArray2.create_back();
+            test.health = 1.0f;
+            test.number  = i;
+        }
+        SDL_Log("Took %ld", std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - timepoint).count());
+    }
+
+    {
+        auto timepoint = std::chrono::high_resolution_clock::now();
+        PODArray<TestStruct> testArray2(10000);
+        for (int i = 0; i < 10000; i++) {
+            TestStruct& test = testArray2.create_back();
+            test = {1.0f, i};
+        }
+        SDL_Log("Took %ld", std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - timepoint).count());
+    }
+
 	srand(time(nullptr));
 
     // Engine* engine = new Engine();
