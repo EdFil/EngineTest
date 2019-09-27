@@ -16,7 +16,7 @@ public:
     /** Returns the number of elements allowed without reallocating memory */
     Uint32 capacity() const;
 
-    /** Resize the array to it can fit 'size' elements */
+    /** Resize the array so it can fit 'size' elements */
     void resize(Uint32 size);
 
     /**  */
@@ -34,6 +34,9 @@ public:
     /** Gets array element on index 'index' */
     T& operator[](Uint32 index);
 
+    /** Gets const array element on index 'index' */
+    const T& operator[](Uint32 index) const;
+
 private:
     Uint32 _capacity;
     Uint32 _size;
@@ -42,53 +45,57 @@ private:
 
 // -----------------
 
-template <typename T> 
+template <typename T>
 PODArray<T>::PODArray() : _capacity(0), _size(0), _data(nullptr) {}
 
-template <typename T> 
-PODArray<T>::PODArray(Uint32 capacity) : _capacity(0), _size(0), _data(nullptr) {
+template <typename T>
+PODArray<T>::PODArray(Uint32 capacity)
+  : _capacity(0), _size(0), _data(nullptr) {
     resize(capacity);
 }
 
-template <typename T> 
+template <typename T>
 PODArray<T>::~PODArray() {
-    delete _data;
+    SDL_free(_data);
 }
 
-template <typename T> 
+template <typename T>
 bool PODArray<T>::isEmpty() const {
     return _size == 0;
 }
 
-template <typename T> 
+template <typename T>
 Uint32 PODArray<T>::size() const {
     return _size;
 }
 
-template <typename T> 
+template <typename T>
 Uint32 PODArray<T>::capacity() const {
     return _capacity;
 }
 
-template <typename T> 
+template <typename T>
 void PODArray<T>::resize(Uint32 size) {
     if (size == 0) {
-        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "[PODArray::resize] Resize to 0. Deleting memory...");
-        delete _data;
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
+                    "[PODArray::resize] Resize to 0. Deleting memory...");
+        SDL_free(_data);
         _data = nullptr;
         _size = _capacity = 0;
 
     } else if (void* newData = SDL_realloc(_data, sizeof(T) * size)) {
-		_data = (T*)newData;
+        _data = (T*)newData;
         _capacity = size;
         _size = SDL_min(size, _size);
-        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "[PODArray::resize] (re)allocating memory...");
+        SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
+                    "[PODArray::resize] (re)allocating memory...");
     } else {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "[PODArray::resize] Error (re)allocating memory...");
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "[PODArray::resize] Error (re)allocating memory...");
     }
 }
 
-template <typename T> 
+template <typename T>
 T& PODArray<T>::create_back() {
     if (_size == _capacity) {
         resize(SDL_max(_capacity * 2, 1));
@@ -98,7 +105,7 @@ T& PODArray<T>::create_back() {
     return _data[_size - 1];
 }
 
-template <typename T> 
+template <typename T>
 void PODArray<T>::push_back(const T& item) {
     if (_size == _capacity) {
         resize(SDL_max(_capacity * 2, 1));
@@ -108,20 +115,26 @@ void PODArray<T>::push_back(const T& item) {
     _size++;
 }
 
-template <typename T> 
+template <typename T>
 void PODArray<T>::pop_back() {
     if (_size != 0) {
         --_size;
     }
 }
 
-template <typename T> 
+template <typename T>
 void PODArray<T>::clear() {
     _size = 0;
 }
 
-template <typename T> 
+template <typename T>
 T& PODArray<T>::operator[](Uint32 index) {
     SDL_assert(index < _size);
-    return _data[index]; 
+    return _data[index];
+}
+
+template <typename T>
+const T& PODArray<T>::operator[](Uint32 index) const {
+    SDL_assert(index < _size);
+    return _data[index];
 }

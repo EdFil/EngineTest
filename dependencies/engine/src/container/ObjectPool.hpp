@@ -1,15 +1,6 @@
 #pragma once
 
-#include <cstdint>
-#include <cstdlib>
-#include <cstring>
-#include <cassert>
-
-using ObjectPoolHandle = uint32_t;
-
-static const ObjectPoolHandle k_invalidHandle = UINT32_MAX;
-
-#define MIN(__ARG1__, __ARG2__) (__ARG1__ < __ARG2__ ? __ARG1__ : __ARG2__)
+#include <SDL_stdinc.h>
 
 template <typename T>
 class ObjectPool {
