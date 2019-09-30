@@ -3,16 +3,20 @@
 class String {
 public:
     String();
-    String(const char* data);
+    String(const char* const data);
     String(const String& string);
     String(String&& string) noexcept;
     ~String();
 
+    bool isEmpty() const { return _length == 0; }
     char* data() const { return _data; }
     Uint32 length() const { return _length; }
     Uint32 capacity() const { return _capacity; }
 
-    String& operator=(const char* rhs);
+    bool operator==(const char* const rhs) const;
+    bool operator==(const String& rhs) const;
+
+    String& operator=(const char* const rhs);
     String& operator=(const String& rhs);
     String& operator=(String&& rhs) noexcept;
 

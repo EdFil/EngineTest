@@ -100,11 +100,29 @@ void testArray() {
 
 #include <core/String.hpp>
 
-void testString() {
-    String string1;
-    String string2("Coisa");
+#define PRINT_STRING(__STRING__)                                                         \
+    SDL_Log("Data:%s, Capacity:%d, Length:%d", __STRING__.data(), __STRING__.capacity(), \
+            __STRING__.length());
 
-    string1 = string2;
+void testString() {
+    {
+        String string;
+        PRINT_STRING(string)
+    }
+
+    {
+        String string("");
+        PRINT_STRING(string)
+    }
+
+    {
+        String string("This is a string");
+        PRINT_STRING(string)
+        string = "This is a bigger string";
+        PRINT_STRING(string)
+        string = "Small string";
+        PRINT_STRING(string)
+    }
 
     return;
 }

@@ -6,9 +6,16 @@ namespace string_internal {
     char kEmptyString[] = "";
 }
 
-String::String() : _data(string_internal::kEmptyString) {}
-String::String(const char* data) { init(data); }
-String::String(const String& other) { init(other._data, other._length); }
+String::String() : _data(string_internal::kEmptyString) {
+}
+
+String::String(const char* data) {
+    init(data);
+}
+
+String::String(const String& other) {
+    init(other._data, other._length);
+}
 
 String::String(String&& other) noexcept {
     SDL_memcpy(this, &other, sizeof(String));
@@ -19,6 +26,18 @@ String::~String() {
     if (_capacity > 0) {
         SDL_free(_data);
     }
+}
+
+bool String::operator==(const char* rhs) const {
+    if (rhs == nullptr) {
+        return false;
+    }
+
+    return SDL_strcmp(_data, rhs) == 0;
+}
+
+bool String::operator==(const String& rhs) const {
+    return SDL_strcmp(_data, rhs._data) == 0;
 }
 
 String& String::operator=(const char* rhs) {
@@ -38,7 +57,7 @@ String& String::operator=(String&& rhs) noexcept {
 }
 
 bool String::init(const char* const data) {
-    if (data == nullptr) {
+    if (data == nullptr || data[0] == '\0') {
         _data = string_internal::kEmptyString;
         _length = 0;
         return false;
@@ -54,7 +73,7 @@ bool String::init(const char* const data, Uint32 length) {
     // If we need to allocate memory
     if (length > _capacity) {
         // Allocate
-        char* newData = static_cast<char*>(SDL_malloc(sizeof(char) * length));
+        char* newData = static_cast<char*>(SDL_malloc(newDataSize));
         if (newData == nullptr) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "[String::init] Error on malloc(%d)",
                          newDataSize);
