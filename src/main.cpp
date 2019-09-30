@@ -3,9 +3,9 @@
 
 #include <SDL.h>
 
-#include <ctime>
-
 #include <Scene.hpp>
+#include <core/HashString.hpp>
+#include <ctime>
 #include <math/Matrix4f.hpp>
 
 #define NUM_ENTITIES 100000
@@ -127,9 +127,22 @@ void testString() {
     return;
 }
 
+void testHashString() {
+    {
+        HashString hashString = CreateHashString("This is a test");
+        HashString hashString2 = CreateHashString("This is a test");
+        HashString hashString3 = CreateHashString("This is a second test");
+
+        SDL_assert(hashString == hashString2);
+        SDL_assert(hashString == hashString3);
+    }
+}
+
 int main() {
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
-    testString();
+    // testArray();
+    // testString();
+    testHashString();
 
     return 0;
 }

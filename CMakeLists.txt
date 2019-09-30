@@ -20,7 +20,7 @@ message(STATUS "")
 # Check build type
 # ================
 
-set (USE_PREBUILT_LIBRARIES OFF)
+set (USE_PREBUILT_LIBRARIES ON)
 
 if (NOT CMAKE_BUILD_TYPE)
     message(WARNING " --> 'CMAKE_BUILD_TYPE' is not defined... assuming 'Debug'")
@@ -35,13 +35,13 @@ message(STATUS "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
 # ===========
 
 if (MSVC)
-    set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /EHsc /experimental:external /external:anglebrackets /external:W0")
-    set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od /RTC1 /DDEBUG /Wall")
-    set(CMAKE_CXX_FLAGS_RELEASE "/MD /Ox /Ob2 /DRELEASE")
+    set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /EHsc /Wall /experimental:external /external:anglebrackets /external:W0")
+    set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od /RTC1 /DDEBUG /DSDL_ASSERT_LEVEL=2")
+    set(CMAKE_CXX_FLAGS_RELEASE "/MD /Ox /Ob2 /DRELEASE /DSDL_ASSERT_LEVEL=0")
 else()
-    set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -pedantic -fno-exceptions")
-    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -DDEBUG")
-    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DRELEASE")
+    set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -fno-exceptions")
+    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -DDEBUG -DSDL_ASSERT_LEVEL=2")
+    set(CMAKE_CXX_FLAGS_RELEASE "-DRELEASE -DSDL_ASSERT_LEVEL=0")
 endif()
 
 message (STATUS "CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
