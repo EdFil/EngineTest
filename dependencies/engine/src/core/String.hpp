@@ -1,3 +1,5 @@
+#pragma once
+
 #include <SDL_stdinc.h>
 
 class String {
@@ -9,7 +11,7 @@ public:
     ~String();
 
     bool isEmpty() const { return _length == 0; }
-    char* data() const { return _data; }
+    const char* data() const { return _data; }
     Uint32 length() const { return _length; }
     Uint32 capacity() const { return _capacity; }
 
