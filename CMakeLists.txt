@@ -20,7 +20,7 @@ message(STATUS "")
 # Check build type
 # ================
 
-set (USE_PREBUILT_LIBRARIES OFF)
+set (USE_PREBUILT_LIBRARIES ON)
 
 if (NOT CMAKE_BUILD_TYPE)
     message(WARNING " --> 'CMAKE_BUILD_TYPE' is not defined... assuming 'Debug'")
@@ -39,7 +39,7 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od /RTC1 /DDEBUG /DSDL_ASSERT_LEVEL=2")
     set(CMAKE_CXX_FLAGS_RELEASE "/MD /Ox /Ob2 /DRELEASE /DSDL_ASSERT_LEVEL=0")
 else()
-    set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -pedantic -fno-exceptions")
+    set(CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -fno-exceptions")
     set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -DDEBUG -DSDL_ASSERT_LEVEL=2")
     set(CMAKE_CXX_FLAGS_RELEASE "-DRELEASE -DSDL_ASSERT_LEVEL=0")
 endif()
