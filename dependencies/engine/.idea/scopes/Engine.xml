@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="Engine" pattern="!file[Engine]:.idea/*&amp;&amp;!file[Engine]:.idea//*&amp;&amp;!file[Engine]:.vscode//*&amp;&amp;!file[Engine]:dependencies//*" />
+</component>

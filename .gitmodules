@@ -1,3 +1,0 @@
-[submodule "dependencies/engine"]
-	path = dependencies/engine
-	url = git@github.com:EdFil/Engine.git

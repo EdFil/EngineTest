@@ -1,15 +1,16 @@
-project(EngineTest)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
+project(EngineTest VERSION 0 LANGUAGES CXX)
 
 # Variable definitions
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)
-set (CMAKE_LIBRARY_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)
 set (CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)
-set (SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set (CMAKE_CXX_STANDARD 17)
+
+set(CMAKE_PROJECT_VERSION "")
+set(CMAKE_PROJECT_VERSION_MAJOR "")
+set(CMAKE_PROJECT_VERSION_MINOR "")
+set(CMAKE_PROJECT_VERSION_PATCH "")
 
 message(STATUS "")
 message(STATUS "============== ${PROJECT_NAME} ==============")
@@ -18,6 +19,8 @@ message(STATUS "")
 # ================
 # Check build type
 # ================
+
+set (USE_PREBUILT_LIBRARIES OFF)
 
 if (NOT CMAKE_BUILD_TYPE)
     message(WARNING " --> 'CMAKE_BUILD_TYPE' is not defined... assuming 'Debug'")
@@ -32,13 +35,13 @@ message(STATUS "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
 # ===========
 
 if (MSVC)
-		set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /EHsc /experimental:external /external:anglebrackets /external:W0")
-        set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od /RTC1 /DDEBUG /Wall")
-        set(CMAKE_CXX_FLAGS_RELEASE "/MD /Ox /Ob2 /DRELEASE")
+    set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /EHsc /experimental:external /external:anglebrackets /external:W0")
+    set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od /RTC1 /DDEBUG /Wall")
+    set(CMAKE_CXX_FLAGS_RELEASE "/MD /Ox /Ob2 /DRELEASE")
 else()
-		set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -pedantic -fno-exceptions")
-        set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -DDEBUG")
-        set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DRELEASE")
+    set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -pedantic -fno-exceptions")
+    set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -DDEBUG")
+    set(CMAKE_CXX_FLAGS_RELEASE "-O3 -DRELEASE")
 endif()
 
 message (STATUS "CMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}")
@@ -49,12 +52,15 @@ message (STATUS "CMAKE_CXX_FLAGS_RELEASE=${CMAKE_CXX_FLAGS_RELEASE}")
 # Dependencies
 # ============
 
-#set(RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources" CACHE PATH "Resources Path" FORCE)
-#add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/.." "${CMAKE_BINARY_DIR}/EngineBuild")
+# Engine
+set(RESOURCES_DIR "${CMAKE_CURRENT_SOURCE_DIR}/resources" CACHE PATH "Resources Path" FORCE)
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/engine")
 
 # ================
 # Source gathering
 # ================
+
+set (SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 file(GLOB_RECURSE SOURCES
         "${SOURCE_DIR}/*.cpp" "${SOURCE_DIR}/*.c"
@@ -63,14 +69,15 @@ file(GLOB_RECURSE SOURCES
 # Make library
 add_executable(${PROJECT_NAME} ${SOURCES})
 
-#target_link_libraries(Engine_TESTS Engine_Static )
+# Add libs/projects to link against
+target_link_libraries(${PROJECT_NAME} Engine_Static)
 
-# Include directotories
-target_include_directories(${PROJECT_NAME} PUBLIC ${SOURCE_DIR})
+# Add include directories
+target_include_directories(${PROJECT_NAME} PRIVATE ${SOURCE_DIR})
 
-## Copy resources to build dir
-#add_custom_command(TARGET Engine_TESTS POST_BUILD
-#		COMMAND ${CMAKE_COMMAND} -E copy_directory ${RESOURCES_DIR} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources)
+# Copy resources to build dir
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory ${RESOURCES_DIR} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/resources)
 
 # Source group generation for IDEs
 foreach(SOURCE IN ITEMS ${SOURCES})
