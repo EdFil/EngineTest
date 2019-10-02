@@ -134,11 +134,11 @@ void testHashString() {
         HashString hashString3 = CreateHashString("This is a second test");
 
         SDL_assert(hashString == hashString2);
-        SDL_assert(hashString == hashString3);
+        SDL_assert(hashString != hashString3);
     }
 }
 
-int main() {
+int main(int argc, char* argv[]) {
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
     // testArray();
     // testString();

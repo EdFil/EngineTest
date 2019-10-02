@@ -14,7 +14,7 @@ if(result)
 endif()
 
 if (${USE_PREBUILT_LIBRARIES})
-    if(MSVC)
+    if(WIN32)
         set(SDL2_DIR "${CMAKE_CURRENT_SOURCE_DIR}/SDL2")
         find_package(SDL2 REQUIRED)
 

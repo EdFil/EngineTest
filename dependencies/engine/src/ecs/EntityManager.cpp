@@ -7,7 +7,7 @@ const uint8_t entity_manager::kEntityIndexBits = 24;
 const uint8_t entity_manager::kEntityGenerationBits = 8;
 const uint32_t entity_manager::kEntityIndexMask = 0x00FFFFFF;
 const uint32_t entity_manager::kEntityGenerationMask = 0xFF000000;
-const uint32_t entity_manager::kEntityGenerationMaxValue = kEntityGenerationBits >> kEntityIndexBits;
+const uint32_t entity_manager::kEntityGenerationMaxValue = 0x000000FF;
 const EntityID entity_manager::k_invalidEntity{0xFFFF};
 
 // Helper functions
