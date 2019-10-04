@@ -4,7 +4,7 @@
 #include <SDL.h>
 
 #include <Scene.hpp>
-#include <core/HashString.hpp>
+#include <core/StringID.hpp>
 #include <ctime>
 #include <math/Matrix4f.hpp>
 
@@ -127,14 +127,17 @@ void testString() {
     return;
 }
 
-void testHashString() {
+void testStringID() {
     {
-        HashString hashString = CreateHashString("This is a test");
-        HashString hashString2 = CreateHashString("This is a test");
-        HashString hashString3 = CreateHashString("This is a second test");
+        StringID test1 = SID("String 1");
+        StringID test2 = SID("String 2");
+        StringID test3 = SID("String 1");
+        StringID test4 = test1;
+        StringID test5 = SID(" ");
 
-        SDL_assert(hashString == hashString2);
-        SDL_assert(hashString != hashString3);
+        SDL_assert(test1 != test2);
+        SDL_assert(test1 == test3);
+        SDL_assert(test3 == test4);
     }
 }
 
@@ -142,7 +145,7 @@ int main(int argc, char* argv[]) {
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
     // testArray();
     // testString();
-    testHashString();
+    testStringID();
 
     return 0;
 }

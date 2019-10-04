@@ -68,7 +68,8 @@
         "sstream": "cpp",
         "bit": "cpp",
         "numeric": "cpp",
-        "deque": "cpp"
+        "deque": "cpp",
+        "filesystem": "cpp"
     },
     "cmake.configureOnOpen": true
 }

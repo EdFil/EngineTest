@@ -24,6 +24,8 @@ String::String(String&& other) noexcept {
 
 String::~String() {
     if (_capacity > 0) {
+        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "[String::init] (%p) Delete %lu bytes",
+                     (void*)this, (_capacity + 1) * sizeof(char));
         SDL_free(_data);
     }
 }
@@ -75,15 +77,17 @@ bool String::init(const char* const data, Uint32 length) {
         // Allocate
         char* newData = static_cast<char*>(SDL_malloc(newDataSize));
         if (newData == nullptr) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "[String::init] Error on malloc(%d)",
-                         newDataSize);
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "[String::init] (%p) Error on malloc(%d)",
+                         (void*)this, newDataSize);
             return false;
         }
-        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "[String::init] Allocate %d bytes", newDataSize);
+        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "[String::init] (%p) Allocate %d bytes",
+                     (void*)this, newDataSize);
 
         // Copy
         if (!SDL_memcpy(newData, data, newDataSize)) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "[String::init] Error on memcpy(%p, %p, %d)",
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                         "[String::init] (%p) Error on memcpy(%p, %p, %d)", (void*)this,
                          (void*)newData, (void*)data, newDataSize);
             SDL_free(newData);
             return false;
@@ -99,7 +103,8 @@ bool String::init(const char* const data, Uint32 length) {
     } else {
         // Copy
         if (!SDL_memcpy(_data, data, newDataSize)) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "[String::init] Error on memcpy(%p, %p, %d)",
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                         "[String::init] (%p) Error on memcpy(%p, %p, %d)", (void*)this,
                          (void*)_data, (void*)data, newDataSize);
             return false;
         }

@@ -14,8 +14,6 @@ if (${USE_PREBUILT_LIBRARIES})
             INSTALL_COMMAND   ""
             TEST_COMMAND      ""
         )
-    else()
-        message(FATAL_ERROR "???")
     endif()
 else()
     ExternalProject_Add(SDL2

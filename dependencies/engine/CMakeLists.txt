@@ -10,9 +10,13 @@ if(MSVC)
 	set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /experimental:external /external:anglebrackets /external:W0 /Wall /GR /EHsc")
 	if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
 		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi /MTd")
-	endif()
+    endif()
 else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -O0 -g")
+endif()
+
+if (USE_COMPILE_TIME_STRING_ID)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCOMPILE_TIME_STRING_ID")
 endif()
 
 # ============
