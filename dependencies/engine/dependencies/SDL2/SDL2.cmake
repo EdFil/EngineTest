@@ -14,6 +14,8 @@ if (${USE_PREBUILT_LIBRARIES})
             INSTALL_COMMAND   ""
             TEST_COMMAND      ""
         )
+    else()
+        message(STATUS "Not downloading anything. Expecting SDL2 libraries to be installed")
     endif()
 else()
     ExternalProject_Add(SDL2

@@ -2,15 +2,19 @@
 configure_file(SDL2.cmake SDL2-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
                 RESULT_VARIABLE result
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/SDL2-download )
+                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/SDL2-download
+                OUTPUT_QUIET
+                ERROR_QUIET)
 if(result)
     message(FATAL_ERROR "CMake step for SDL2 failed: ${result}")
 endif()
 execute_process(COMMAND ${CMAKE_COMMAND} --build .
                 RESULT_VARIABLE result
-                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/SDL2-download )
+                WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/SDL2-download
+                OUTPUT_QUIET
+                ERROR_QUIET)
 if(result)
-    message(FATAL_ERROR "Build step for gtest failed: ${result}")
+    message(FATAL_ERROR "Build step for SDL2 failed: ${result}")
 endif()
 
 if (${USE_PREBUILT_LIBRARIES})
@@ -18,10 +22,9 @@ if (${USE_PREBUILT_LIBRARIES})
         set(SDL2_DIR "${CMAKE_CURRENT_SOURCE_DIR}/SDL2")
         find_package(SDL2 REQUIRED)
 
-        message(STATUS "SDL2_LIBRARY ---> ${SDL2_LIBRARY}")
-        message(STATUS "SDL2_RUNTIME_LIBRARY ---> ${SDL2_RUNTIME_LIBRARY}")
-        message(STATUS "SDL2_INCLUDE_DIR ---> ${SDL2_INCLUDE_DIR}")
-        message(STATUS "SDL2MAIN_LIBRARY ---> ${SDL2MAIN_LIBRARY}")
+        if (NOT SDL2_INCLUDE_DIR OR NOT SDL2_LIBRARY)
+            message (FATAL_ERROR "SDL2 not found. Did it download correctly?")
+        endif()
 
         add_library(SDL2 SHARED IMPORTED GLOBAL)
         set_target_properties(SDL2
@@ -30,22 +33,25 @@ if (${USE_PREBUILT_LIBRARIES})
             INTERFACE_INCLUDE_DIRECTORIES "${SDL2_INCLUDE_DIR}"
         )
 
-        if (WIN32)
-            file(INSTALL ${SDL2_RUNTIME_LIBRARY} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
-        endif()
-
         add_library(SDL2main SHARED IMPORTED GLOBAL)
         set_target_properties(SDL2main
             PROPERTIES
             IMPORTED_IMPLIB "${SDL2MAIN_LIBRARY}"
         )
+
+        if (WIN32)
+            file(INSTALL ${SDL2_RUNTIME_LIBRARY} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        endif()
+
+        # Source group generation for IDEs
+        foreach(SOURCE IN ITEMS ${SDL2_INCLUDE_DIR})
+            get_filename_component(SOURCE_PATH "${SOURCE}" PATH)
+            file(RELATIVE_PATH SOURCE_PATH_REL "${SOURCE_DIR}/.." "${SOURCE_PATH}")
+            string(REPLACE "/" "\\" GROUP_PATH "${SOURCE_PATH_REL}")
+            source_group("${GROUP_PATH}" FILES "${SOURCE}")
+        endforeach()
     else()
         find_package(SDL2 REQUIRED)
-
-        message(STATUS "SDL2_LIBRARY ---> ${SDL2_LIBRARY}")
-        message(STATUS "SDL2_RUNTIME_LIBRARY ---> ${SDL2_RUNTIME_LIBRARY}")
-        message(STATUS "SDL2_INCLUDE_DIR ---> ${SDL2_INCLUDE_DIR}")
-        message(STATUS "SDL2MAIN_LIBRARY ---> ${SDL2MAIN_LIBRARY}")
 
         add_library(SDL2 INTERFACE)
         target_include_directories(SDL2 SYSTEM INTERFACE ${SDL2_INCLUDE_DIR})
