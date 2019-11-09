@@ -1,37 +1,43 @@
 project(Engine)
 cmake_minimum_required(VERSION 2.8.12)
 
+message(STATUS "")
+message(STATUS "============== ${PROJECT_NAME} ==============")
+
+
 # Configure CMake
 set (CMAKE_CXX_STANDARD 17)
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # CXX Flags
-if(MSVC)
-	set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /experimental:external /external:anglebrackets /external:W0 /Wall /GR /EHsc")
-	if(NOT ${CMAKE_BUILD_TYPE} STREQUAL "Release")
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zi /MTd")
-    endif()
-else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -pedantic -O0 -g")
-endif()
-
 if (USE_COMPILE_TIME_STRING_ID)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCOMPILE_TIME_STRING_ID")
 endif()
+
+message (STATUS "")
+message (STATUS "CMAKE_CXX_FLAGS = ${CMAKE_CXX_FLAGS}")
+message (STATUS "CMAKE_CXX_FLAGS_DEBUG = ${CMAKE_CXX_FLAGS_DEBUG}")
+message (STATUS "CMAKE_CXX_FLAGS_RELEASE = ${CMAKE_CXX_FLAGS_RELEASE}")
 
 # ============
 # Dependencies
 # ============
 
+message(STATUS "")
+message(STATUS "=== SDL2 ===")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2")
+message(STATUS "") 
+message(STATUS "=== STB ===")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/stb")
 
+message(STATUS "") 
+message(STATUS "=== Resources ===")
 if(NOT RESOURCES_DIR)
 	message(WARNING "RESOURCES_DIR not set")
 elseif(NOT IS_DIRECTORY ${RESOURCES_DIR})
 	message(WARNING "${RESOURCES_DIR} is not a directory")
 endif()
-message(STATUS "ENGINE - RESOURCES_DIR = ${RESOURCES_DIR}")
+message(STATUS "RESOURCES_DIR = ${RESOURCES_DIR}")
 
 # ================
 # Source gathering
@@ -69,3 +75,5 @@ foreach(SOURCE IN ITEMS ${SOURCES})
     string(REPLACE "/" "\\" GROUP_PATH "${SOURCE_PATH_REL}")
     source_group("${GROUP_PATH}" FILES "${SOURCE}")
 endforeach()
+
+message(STATUS "")

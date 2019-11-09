@@ -4,6 +4,8 @@
 #include <SDL_log.h>
 #include <SDL_stdinc.h>
 
+#include <utility>
+
 template <typename T, bool isObject = true>
 class Array {
 public:

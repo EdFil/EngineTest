@@ -9,12 +9,23 @@ file(GLOB_RECURSE SOURCES
         "${SOURCE_DIR}/*.cpp" "${SOURCE_DIR}/*.c"
         "${SOURCE_DIR}/*.hpp" "${SOURCE_DIR}/*.h")
 
+
 # Make library
 add_library(stb_static INTERFACE)
 target_sources(stb_static INTERFACE ${SOURCES})
 
 # Include directotories
 target_include_directories(stb_static SYSTEM INTERFACE ${SOURCE_DIR})
+
+# Show files
+set(FILE_NAMES "")
+foreach(FILE ${SOURCES})
+        get_filename_component(NAME ${FILE} NAME)
+        string(APPEND FILE_NAMES "${NAME} ")
+endforeach()
+
+message(STATUS ${FILE_NAMES})
+
 
 
 

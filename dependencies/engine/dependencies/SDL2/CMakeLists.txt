@@ -3,7 +3,6 @@ configure_file(SDL2.cmake SDL2-download/CMakeLists.txt)
 execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
                 RESULT_VARIABLE result
                 WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/SDL2-download
-                OUTPUT_QUIET
                 ERROR_QUIET)
 if(result)
     message(FATAL_ERROR "CMake step for SDL2 failed: ${result}")
@@ -52,6 +51,7 @@ if (${USE_PREBUILT_LIBRARIES})
         endforeach()
     else()
         find_package(SDL2 REQUIRED)
+        message(STATUS "SDL2_VERSION_STRING = ${SDL2_VERSION_STRING}")
 
         add_library(SDL2 INTERFACE)
         target_include_directories(SDL2 SYSTEM INTERFACE ${SDL2_INCLUDE_DIR})
