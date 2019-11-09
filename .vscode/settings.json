@@ -69,7 +69,14 @@
         "bit": "cpp",
         "numeric": "cpp",
         "deque": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "codecvt": "cpp",
+        "condition_variable": "cpp",
+        "memory_resource": "cpp",
+        "iomanip": "cpp",
+        "thread": "cpp",
+        "queue": "cpp",
+        "stack": "cpp"
     },
     "cmake.configureOnOpen": true
 }

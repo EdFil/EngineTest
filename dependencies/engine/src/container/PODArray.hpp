@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL_assert.h>
+#include <SDL_log.h>
 #include <SDL_stdinc.h>
 
 template <typename T>
@@ -19,7 +20,7 @@ public:
     /** Resize the array so it can fit 'size' elements */
     bool resize(Uint32 size);
 
-	void* data();
+    void* data();
 
     /** Gets array element on index 'index' */
     T& operator[](Uint32 index);

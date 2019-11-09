@@ -4,9 +4,16 @@
 #include <SDL.h>
 
 #include <Scene.hpp>
+#include <container/ObjectPool.hpp>
+#include <container/PODArray.hpp>
+#include <container/PODVector.hpp>
+#include <core/String.hpp>
 #include <core/StringID.hpp>
-#include <ctime>
 #include <math/Matrix4f.hpp>
+
+#include <algorithm>
+#include <ctime>
+#include <vector>
 
 #define NUM_ENTITIES 100000
 class MyScene : public Scene {
@@ -40,8 +47,6 @@ public:
     }
 };
 
-#include <container/PODArray.hpp>
-
 struct TestStruct {
     float health;
     int number;
@@ -67,9 +72,9 @@ void testArray() {
         for (unsigned i = 0; i < kNumElems; i++) {
             testArray[i] = {1.0f, (int)i};
         }
-        SDL_Log("Took %lld", std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                std::chrono::high_resolution_clock::now() - timepoint)
-                                .count());
+        SDL_Log("Took %lld", (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
+                                 std::chrono::high_resolution_clock::now() - timepoint)
+                                 .count());
     }
 
     {
@@ -79,13 +84,11 @@ void testArray() {
             testArray[i].health = 1.0f;
             testArray[i].health = i;
         }
-        SDL_Log("Took %lld", std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                std::chrono::high_resolution_clock::now() - timepoint)
-                                .count());
+        SDL_Log("Took %lld", (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
+                                 std::chrono::high_resolution_clock::now() - timepoint)
+                                 .count());
     }
 }
-
-#include <container/PODVector.hpp>
 
 void testVector() {
     {
@@ -98,9 +101,10 @@ void testVector() {
         coisa.push_back(5);
 
         coisa.erase(std::find(coisa.cbegin(), coisa.cend(), 3));
-        SDL_Log("std::vector Took %lld", std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                            std::chrono::high_resolution_clock::now() - timepoint)
-                                            .count());
+        SDL_Log("std::vector Took %lld",
+                (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now() - timepoint)
+                    .count());
     }
 
     {
@@ -113,9 +117,10 @@ void testVector() {
         vector.push_back(5);
 
         vector.erase(3);
-        SDL_Log("PODVector Took %lld", std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                          std::chrono::high_resolution_clock::now() - timepoint)
-                                          .count());
+        SDL_Log("PODVector Took %lld",
+                (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now() - timepoint)
+                    .count());
     }
 
     {
@@ -128,15 +133,14 @@ void testVector() {
         vector2.push_back(5);
 
         vector2.fast_erase(3);
-        SDL_Log("PODVector fast Took %lld", std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                          std::chrono::high_resolution_clock::now() - timepoint)
-                                          .count());
+        SDL_Log("PODVector fast Took %lld",
+                (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
+                    std::chrono::high_resolution_clock::now() - timepoint)
+                    .count());
     }
 
     SDL_Log("End");
 }
-
-#include <core/String.hpp>
 
 #define PRINT_STRING(__STRING__)                                                         \
     SDL_Log("Data:%s, Capacity:%d, Length:%d", __STRING__.data(), __STRING__.capacity(), \
@@ -179,8 +183,6 @@ void testStringID() {
     }
 }
 
-#include <container/ObjectPool.hpp>
-
 struct TestClass {
     int i;
 };
@@ -213,6 +215,9 @@ void testObjectPool() {
 }
 
 int main(int argc, char* argv[]) {
+    (void)argc;
+    (void)argv;
+
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
     testArray();
     testVector();
