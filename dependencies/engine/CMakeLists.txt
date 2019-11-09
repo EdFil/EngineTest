@@ -30,6 +30,12 @@ message(STATUS "")
 message(STATUS "=== STB ===")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/stb")
 
+if (BUILD_TESTS)
+    message(STATUS "") 
+    message(STATUS "=== GTEST ===")
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/gtest")
+endif()
+
 message(STATUS "") 
 message(STATUS "=== Resources ===")
 if(NOT RESOURCES_DIR)
@@ -65,7 +71,7 @@ target_include_directories(Engine_Static
 target_link_libraries(Engine_Static
 		PUBLIC
 		SDL2 SDL2main # SDL
-		stb_static # stb
+        stb_static # stb
 )
 
 # Source group generation for IDEs
@@ -75,5 +81,23 @@ foreach(SOURCE IN ITEMS ${SOURCES})
     string(REPLACE "/" "\\" GROUP_PATH "${SOURCE_PATH_REL}")
     source_group("${GROUP_PATH}" FILES "${SOURCE}")
 endforeach()
+
+if (BUILD_TESTS)
+    message(STATUS "")
+    message(STATUS "=== TESTS ===")
+
+    set(TESTS_DIR "${CMAKE_CURRENT_SOURCE_DIR}/test")
+    file(GLOB_RECURSE TEST_SOURCES 
+        "${TESTS_DIR}/*.cpp" "${TESTS_DIR}/*.c"
+        "${TESTS_DIR}/*.hpp" "${TESTS_DIR}/*.h")
+    add_executable("${PROJECT_NAME}_tests" ${TEST_SOURCES})
+
+    list(LENGTH TEST_SOURCES NUM_TESTS)
+    MATH(EXPR NUM_TESTS "${NUM_TESTS}-1")
+    message(STATUS "We have ${NUM_TESTS} test(s) suite...")
+
+    # Link dependencies
+    target_link_libraries(${PROJECT_NAME}_tests PRIVATE Engine_Static gmock_main)
+endif()
 
 message(STATUS "")

@@ -1,27 +1,27 @@
-#include <SDL.h>
+#include <gtest/gtest.h>
+#include <cstdio>
 
-int main(int argc, char *argv[])
-{
-  SDL_Init(SDL_INIT_VIDEO);
-
-  SDL_Window *window = SDL_CreateWindow(
-    "SDL2Test",
-    SDL_WINDOWPOS_UNDEFINED,
-    SDL_WINDOWPOS_UNDEFINED,
-    640,
-    480,
-    0
-  );
-
-  SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-  SDL_RenderClear(renderer);
-  SDL_RenderPresent(renderer);
-
-  SDL_Delay(3000);
-
-  SDL_DestroyWindow(window);
-  SDL_Quit();
-
-  return 0;
+#if GTEST_OS_ESP8266 || GTEST_OS_ESP32
+#if GTEST_OS_ESP8266
+extern "C" {
+#endif
+void setup() {
+    testing::InitGoogleTest();
 }
+
+void loop() {
+    RUN_ALL_TESTS();
+}
+
+#if GTEST_OS_ESP8266
+}
+#endif
+
+#else
+
+GTEST_API_ int main(int argc, char **argv) {
+    printf("Running main() from %s\n", __FILE__);
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
+#endif

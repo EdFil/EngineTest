@@ -22,6 +22,7 @@ message(STATUS "")
 
 set (USE_PREBUILT_LIBRARIES ON)
 set (USE_COMPILE_TIME_STRING_ID ON)
+set (BUILD_TESTS OFF)
 
 if (NOT CMAKE_BUILD_TYPE)
     message(WARNING " --> 'CMAKE_BUILD_TYPE' is not defined... assuming 'Debug'")

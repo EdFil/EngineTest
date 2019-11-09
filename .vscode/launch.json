@@ -19,7 +19,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/bin/EngineTest",
+            "program": "${workspaceFolder}/build/bin/Engine_tests",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

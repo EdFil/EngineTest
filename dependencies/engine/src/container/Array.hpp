@@ -113,8 +113,9 @@ bool Array<T, isObject>::resize(Uint32 size) {
                 }
             } else {
                 SDL_memcpy(newData, _data, sizeof(T) * SDL_min(size, _size));
-                SDL_free(_data);
             }
+
+            SDL_free(_data);
         } else if (isObject) {
             for (size_t i = 0; i < size; i++) {
                 new (castedNewData + i) T();
