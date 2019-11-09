@@ -1,6 +1,6 @@
 #pragma once
 
-#include "container/PODArray.hpp"
+#include "container/Array.hpp"
 
 template <typename T>
 class PODVector {
@@ -37,7 +37,7 @@ public:
 
 private:
     Uint32 _size;
-    PODArray<T> _vector;
+    Array<T> _vector;
 };
 
 // -----------------
@@ -97,12 +97,12 @@ template <typename T>
 void PODVector<T>::erase(const T& object) {
     for (Uint32 i = 0; i < _vector.size(); i++) {
         if (_vector[i] == object) {
-			if (i != _vector.size() - 1) {
+            if (i != _vector.size() - 1) {
                 const size_t moveSize = _vector.size() - i + 1 * sizeof(T);
                 SDL_memcpy(&_vector[0] + i, &_vector[0] + i + 1, moveSize);
-			}
+            }
 
-			--_size;
+            --_size;
             return;
         }
     }

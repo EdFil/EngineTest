@@ -4,8 +4,8 @@
 #include <SDL.h>
 
 #include <Scene.hpp>
+#include <container/Array.hpp>
 #include <container/ObjectPool.hpp>
-#include <container/PODArray.hpp>
 #include <container/PODVector.hpp>
 #include <core/String.hpp>
 #include <core/StringID.hpp>
@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <ctime>
+#include <iostream>
 #include <vector>
 
 #define NUM_ENTITIES 100000
@@ -51,43 +52,63 @@ struct TestStruct {
     float health;
     int number;
 
-    // TestStruct() : health(0.0f), number(0) { SDL_Log("Constructor1"); }
-    // TestStruct(float health, int number) : health(health), number(number) {
-    // SDL_Log("Constructor2"); } TestStruct(const TestStruct&) noexcept {
-    // SDL_Log("Copy Constructor"); } TestStruct(TestStruct&&) noexcept {
-    // SDL_Log("Move Constructor"); } TestStruct& operator=(const TestStruct&) {
-    // SDL_Log("Copy Operator"); return *this; } TestStruct&
-    // operator=(TestStruct&&) noexcept { SDL_Log("Move Operator"); return
-    // *this; } ~TestStruct() { SDL_Log("Destructor"); }
+    TestStruct() : health(0.0f), number(0) { SDL_Log("Constructor1"); }
+    TestStruct(float health, int number) : health(health), number(number) {
+        SDL_Log("Constructor2");
+    }
+    TestStruct(const TestStruct&) noexcept { SDL_Log("Copy Constructor"); }
+    TestStruct(TestStruct&&) noexcept { SDL_Log("Move Constructor"); }
+    TestStruct& operator=(const TestStruct&) {
+        SDL_Log("Copy Operator");
+        return *this;
+    }
+    TestStruct& operator=(TestStruct&&) noexcept {
+        SDL_Log("Move Operator");
+        return *this;
+    }
+    ~TestStruct() { SDL_Log("Destructor"); }
 };
 
 #include <chrono>
 
 void testArray() {
-    const unsigned kInitialSize = 1000;
-    const unsigned kNumElems = 1000;
-    {
-        auto timepoint = std::chrono::high_resolution_clock::now();
-        PODArray<TestStruct> testArray(kInitialSize);
-        for (unsigned i = 0; i < kNumElems; i++) {
-            testArray[i] = {1.0f, (int)i};
-        }
-        SDL_Log("Took %lld", (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                 std::chrono::high_resolution_clock::now() - timepoint)
-                                 .count());
-    }
+    Array<TestStruct, false> testArray;
+    printf("resize 2\n");
+    testArray.resize(2);
+    printf("resize 4\n");
+    testArray.resize(4);
+    printf("resize 2\n");
+    testArray.resize(2);
+    printf("end\n");
 
-    {
-        auto timepoint = std::chrono::high_resolution_clock::now();
-        PODArray<TestStruct> testArray(kInitialSize);
-        for (unsigned i = 0; i < kNumElems; i++) {
-            testArray[i].health = 1.0f;
-            testArray[i].health = i;
-        }
-        SDL_Log("Took %lld", (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                 std::chrono::high_resolution_clock::now() - timepoint)
-                                 .count());
-    }
+    // const unsigned kInitialSize = 1000;
+    // const unsigned kNumElems = 1000;
+    // {
+    //     auto timepoint = std::chrono::high_resolution_clock::now();
+    //     PODArray<TestStruct> testArray(kInitialSize);
+    //     for (unsigned i = 0; i < kNumElems; i++) {
+    //         testArray[i] = {1.0f, (int)i};
+    //     }
+    //     SDL_Log("Took %lld", (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
+    //                              std::chrono::high_resolution_clock::now() - timepoint)
+    //                              .count());
+    // }
+
+    // {
+    //     auto timepoint = std::chrono::high_resolution_clock::now();
+    //     PODArray<TestStruct> testArray(kInitialSize);
+    //     for (unsigned i = 0; i < kNumElems; i++) {
+    //         testArray[i].health = 1.0f;
+    //         testArray[i].health = i;
+    //     }
+    //     SDL_Log("Took %lld", (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
+    //                              std::chrono::high_resolution_clock::now() - timepoint)
+    //                              .count());
+
+    //     for (auto& elem : testArray) {
+    //         (void)elem;
+    //     }
+    // }
 }
 
 void testVector() {
@@ -220,10 +241,10 @@ int main(int argc, char* argv[]) {
 
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
     testArray();
-    testVector();
-    testString();
-    testStringID();
-    testObjectPool();
+    // testVector();
+    // testString();
+    // testStringID();
+    // testObjectPool();
 
     return 0;
 }

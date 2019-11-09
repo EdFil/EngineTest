@@ -1,6 +1,6 @@
 #pragma once
 
-#include "container/PODArray.hpp"
+#include "container/Array.hpp"
 
 // Memory layout
 //
@@ -14,15 +14,18 @@ namespace entity_manager {
     extern const uint32_t kEntityIndexMask;
     extern const uint32_t kEntityGenerationMask;
     extern const uint32_t kEntityGenerationMaxValue;
-    
+
     extern const EntityID k_invalidEntity;
-}
+}  // namespace entity_manager
 
 struct EntityID {
     uint32_t m_id;
 
     uint32_t index() const { return m_id & entity_manager::kEntityIndexMask; }
-    uint8_t generation() const { return static_cast<uint8_t >((m_id & entity_manager::kEntityGenerationMask) >> entity_manager::kEntityIndexBits); }
+    uint8_t generation() const {
+        return static_cast<uint8_t>((m_id & entity_manager::kEntityGenerationMask) >>
+                                    entity_manager::kEntityIndexBits);
+    }
     operator uint32_t() const { return m_id; }
 };
 using GenerationId = uint8_t;
@@ -48,7 +51,7 @@ public:
     bool isValid(const EntityID& entity) const;
 
 private:
-	void* m_pData;
+    void* m_pData;
     EntityID* m_pEntities;
     GenerationId* m_pGeneration;
     uint32_t m_capacity;
