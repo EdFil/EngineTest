@@ -42,6 +42,10 @@ file(GLOB_RECURSE SOURCES
     "${SOURCE_DIR}/*.cpp" "${SOURCE_DIR}/*.c"
     "${SOURCE_DIR}/*.hpp" "${SOURCE_DIR}/*.h")
 
+if (MSVC)
+    list(APPEND SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Engine.natvis")
+endif()
+
 # Make library
 add_library(Engine_Static STATIC ${SOURCES})
 

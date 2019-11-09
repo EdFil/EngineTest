@@ -1,157 +1,135 @@
-// #include <SDL_stdinc.h>
+#pragma once
 
-// template <typename T>
-// class Vector {
-// public:
-//     Vector();
-//     ~Vector();
+#include "container/PODArray.hpp"
 
-//     bool empty() const;
-//     int size() const;
-//     int capacity() const;
-//     T& operator[](Uint32 index);
-//     const T& operator[](Uint32 index) const;
+template <typename T>
+class PODVector {
+public:
+    PODVector();
+    PODVector(Uint32 size);
+    ~PODVector();
 
-//     void clear();
-//     void reserve(Uint32 newCapacity);
-//     void resize(Uint32 newSize);
+    /** Returns true is array is empty */
+    bool isEmpty() const;
 
-//     void push_back(const T& v);
-//     void pop_back();
-//     void push_front(const T& v);
-//     T* erase(const T* it);
-//     T* fast_erase(const T* it);
-//     T* insert(const T* it, const T& v);
-//     bool contains(const T& v) const;
+    /** Returns the number of elements in the vector */
+    Uint32 size() const;
 
-// private:
-//     Uint32 m_size;
-//     Uint32 m_capacity;
-//     T* m_pData;
-// };
+    /** Returns the number of allocated elements in the vector */
+    Uint32 capacity() const;
 
-// template <typename T>
-// Vector<T>::Vector() : m_size(0), m_capacity(0), m_pData(0) {}
+    /** Resize the array so it can fit 'size' elements */
+    bool resize(Uint32 size);
 
-// template <typename T>
-// Vector<T>::~Vector() {
-//     SDL_free(m_pData);
-// }
+    T& create_back();
 
-// template <typename T>
-// bool Vector<T>::empty() const {
-//     return m_size == 0;
-// }
+    void push_back(const T& object);
 
-// template <typename T>
-// int Vector<T>::size() const {
-//     return m_size;
-// }
+    void erase(const T& object);
 
-// template <typename T>
-// int Vector<T>::capacity() const {
-//     return m_capacity;
-// }
+    void fast_erase(const T& object);
 
-// template <typename T>
-// T& Vector<T>::operator[](Uint32 index) {
-//     SDL_assert(index < m_size);
-//     return m_pData[index];
-// }
+    /** Gets array element on index 'index' */
+    T& operator[](Uint32 index);
 
-// template <typename T>
-// const T& Vector<T>::operator[](Uint32 index) const {
-//     SDL_assert(index < m_size);
-//     return m_pData[index];
-// }
+    /** Gets const array element on index 'index' */
+    const T& operator[](Uint32 index) const;
 
-// template <typename T>
-// void Vector<T>::clear() {
-//     SDL_free(m_pData);
-//     m_size = m_capacity = 0;
-//     m_pData = nullptr;
-// }
+private:
+    Uint32 _size;
+    PODArray<T> _vector;
+};
 
-// template <typename T>
-// void Vector<T>::reserve(Uint32 newCapacity) {
-//     if (newCapacity <= m_capacity) return;
+// -----------------
 
-//     if (void* newData = SDL_realloc(m_pData, sizeof(T) * newCapacity)) {
-//         m_pData = (T*)newData;
-//         m_capacity = newCapacity;
-//         SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION,
-//                     "[Vector::reserve] (re)allocating memory...");
-//     } else {
-//         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-//                      "[Vector::reserve] Error (re)allocating memory...");
-//     }
-// }
+template <typename T>
+PODVector<T>::PODVector() : _size(0) {
+}
 
-// template <typename T>
-// void Vector<T>::resize(Uint32 newSize) {
-//     if (newSize > m_capacity) reserve(newSize);
-//     m_size = newSize;
-// }
+template <typename T>
+PODVector<T>::PODVector(Uint32 capacity) : _size(0) {
+    resize(capacity);
+}
 
-// template <typename T>
-// void Vector<T>::push_back(const T& v) {
-//     if (m_size == m_capacity) reserve(_grow_capacity(m_size + 1));
-//     memcpy(&m_pData[m_size], &v, sizeof(v));
-//     m_size++;
-// }
+template <typename T>
+PODVector<T>::~PODVector() {
+}
 
-// template <typename T>
-// void pop_back() {
-//     SDL_assert(m_size > 0);
-//     m_size--;
-// }
+template <typename T>
+bool PODVector<T>::isEmpty() const {
+    return _size == 0;
+}
 
-// template <typename T>
-// void Vector<t>::push_front(const T& v) {
-//     if (m_size == 0)
-//         push_back(v);
-//     else
-//         insert(m_pData, v);
-// }
+template <typename T>
+Uint32 PODVector<T>::size() const {
+    return _size;
+}
 
-// template <typename T>
-// T* Vector<T>::erase(const T* it) {
-//     SDL_assert(it >= m_pData && it < m_pData + m_size);
-//     const ptrdiff_t off = it - m_pData;
-//     memmove(m_pData + off, m_pData + off + 1,
-//             ((size_t)m_size - (size_t)off - 1) * sizeof(T));
-//     m_size--;
-//     return m_pData + off;
-// }
+template <typename T>
+Uint32 PODVector<T>::capacity() const {
+    return _vector.size();
+}
 
-// template <typename T>
-// T* Vector<T>::fast_erase(const T* it) {
-//     SDL_assert(it >= m_pData && it < m_pData + m_size);
-//     const ptrdiff_t off = it - m_pData;
-//     if (it < m_pData + m_size - 1)
-//         memcpy(m_pData + off, m_pData + m_size - 1, sizeof(T));
-//     m_size--;
-//     return m_pData + off;
-// }
+template <typename T>
+bool PODVector<T>::resize(Uint32 capacity) {
+    return _vector.resize(capacity);
+}
 
-// template <typename T>
-// T* Vector<T>::insert(const T* it, const T& v) {
-//     SDL_assert(it >= m_pData && it <= m_pData + Size);
-//     const ptrdiff_t off = it - Data;
-//     if (Size == Capacity) reserve(_grow_capacity(Size + 1));
-//     if (off < (int)Size)
-//         memmove(m_pData + off + 1, m_pData + off,
-//                 ((size_t)Size - (size_t)off) * sizeof(T));
-//     memcpy(&m_pData[off], &v, sizeof(v));
-//     Size++;
-//     return m_pData + off;
-// }
+template <typename T>
+T& PODVector<T>::create_back() {
+    if (_size == _vector.size()) {
+        resize(_vector.size() * 2);
+    }
 
-// template <typename T>
-// bool Vector<T>::contains(const T& v) const {
-//     const T* data = Data;
-//     const T* data_end = Data + Size;
-//     while (data < data_end)
-//         if (*data++ == v) return true;
-//     return false;
-// }
+    return _vector[_size++];
+}
+
+template <typename T>
+void PODVector<T>::push_back(const T& object) {
+    if (_size >= _vector.size()) {
+        resize(SDL_max(1, _vector.size() * 2));
+    }
+
+    _vector[_size++] = object;
+}
+
+template <typename T>
+void PODVector<T>::erase(const T& object) {
+    for (Uint32 i = 0; i < _vector.size(); i++) {
+        if (_vector[i] == object) {
+			if (i != _vector.size() - 1) {
+                const size_t moveSize = _vector.size() - i + 1 * sizeof(T);
+                SDL_memcpy(&_vector[0] + i, &_vector[0] + i + 1, moveSize);
+			}
+
+			--_size;
+            return;
+        }
+    }
+}
+
+template <typename T>
+void PODVector<T>::fast_erase(const T& object) {
+    for (Uint32 i = 0; i < _vector.size(); i++) {
+        if (_vector[i] == object) {
+            if (i != _vector.size() - 1) {
+                _vector[i] = _vector[_size - 1];
+            }
+
+            --_size;
+            return;
+        }
+    }
+}
+
+template <typename T>
+T& PODVector<T>::operator[](Uint32 index) {
+    SDL_assert(index < _size);
+    return _vector[index];
+}
+
+template <typename T>
+const T& PODVector<T>::operator[](Uint32 index) const {
+    SDL_assert(index < _size);
+    return _vector[index];
+}

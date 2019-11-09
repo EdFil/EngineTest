@@ -1,13 +1,6 @@
 #pragma once
 
-#include <stdint.h>
-
-// EntityID breakdown. 32 bit unsigned integer
-//
-//      0000 0000 0000 0000 0000 0000 0000 0000
-//      |___ ___| |_____________ _____________|
-//          ^                   ^
-//      Generation          LocalIndex
+#include "container/PODArray.hpp"
 
 // Memory layout
 //
@@ -33,6 +26,11 @@ struct EntityID {
     operator uint32_t() const { return m_id; }
 };
 using GenerationId = uint8_t;
+
+struct Entity {
+    Uint32 m_id;
+    Uint8 m_generation;
+};
 
 class EntityManager {
 public:

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <Type Name="PODArray&lt;*&gt;">
+    <DisplayString>{{ size={_size} }}</DisplayString>
+    <Expand>
+      <ArrayItems>
+        <Size>_size</Size>
+        <ValuePointer>_data</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="PODVector&lt;*&gt;">
+    <DisplayString>{{ size={_size} }}</DisplayString>
+    <Expand>
+      <Item Name="[capacity]">_vector._size</Item>
+      <ArrayItems>
+        <Size>_size</Size>
+        <ValuePointer>_vector._data</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+  <Type Name="ObjectPool&lt;*&gt;">
+    <DisplayString>{{ size={m_objects._size} }}</DisplayString>
+    <Expand>
+      <Item Name="[size]" ExcludeView="simple">m_objects._size</Item>
+      <Item Name="[capacity]" ExcludeView="simple">m_objects._capacity</Item>
+      <ArrayItems>
+        <Size>m_objects._size</Size>
+        <ValuePointer>m_objects._data</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+
+</AutoVisualizer>

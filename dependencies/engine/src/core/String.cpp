@@ -24,8 +24,6 @@ String::String(String&& other) noexcept {
 
 String::~String() {
     if (_capacity > 0) {
-        SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "[String::init] (%p) Delete %lu bytes",
-                     (void*)this, (_capacity + 1) * sizeof(char));
         SDL_free(_data);
     }
 }

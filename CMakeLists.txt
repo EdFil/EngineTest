@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.6)
 project(EngineTest VERSION 0 LANGUAGES CXX)
 
 # Variable definitions
@@ -36,7 +36,7 @@ message(STATUS "CMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}")
 # ===========
 
 if (MSVC)
-    set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /EHsc /Wall /experimental:external /external:anglebrackets /external:W0")
+    set(CMAKE_CXX_FLAGS "/DWIN32 /D_WINDOWS /EHsc /W3 /experimental:external /external:anglebrackets /external:W0")
     set(CMAKE_CXX_FLAGS_DEBUG "/MDd /Zi /Ob0 /Od /RTC1 /DDEBUG /DSDL_ASSERT_LEVEL=2")
     set(CMAKE_CXX_FLAGS_RELEASE "/MD /Ox /Ob2 /DRELEASE /DSDL_ASSERT_LEVEL=0")
 else()

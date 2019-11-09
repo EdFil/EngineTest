@@ -19,8 +19,6 @@ constexpr uint32_t make_id(uint8_t generation, uint32_t index) {
 }
 
 EntityManager::EntityManager() : m_pData(nullptr), m_pEntities(nullptr), m_pGeneration(nullptr), m_capacity(0), m_nextAvailableEntityIndex(0) {
-    static_assert(entity_manager::kEntityGenerationBits + entity_manager::kEntityIndexBits == 32);
-    static_assert(entity_manager::kEntityGenerationMask + entity_manager::kEntityIndexMask == UINT32_MAX);
 }
 
 EntityManager::~EntityManager() {
@@ -32,11 +30,6 @@ bool EntityManager::initWithCapacity(uint32_t capacity) {
 }
 
 bool EntityManager::resize(uint32_t capacity) {
-    if (capacity > entity_manager::kEntityIndexMask) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "[EntityManager::resize]  Trying to create %d out of a max of %d. Clamping...", capacity, entity_manager::kEntityIndexMask);
-        capacity = entity_manager::kEntityIndexMask;
-    }
-
     if (capacity == m_capacity) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "[EntityManager::resize] Resize to %d but was already at that capacity. Skipping resize...", capacity);
         return false;
@@ -44,6 +37,8 @@ bool EntityManager::resize(uint32_t capacity) {
 
     if (capacity == 0) {
         SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "[EntityManager::resize] Resize to 0. Deleting memory...");
+        m_nextAvailableEntityIndex = 0;
+
         SDL_free(m_pData);
 		m_pData = nullptr;
         m_pEntities = nullptr;

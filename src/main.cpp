@@ -65,37 +65,75 @@ void testArray() {
         auto timepoint = std::chrono::high_resolution_clock::now();
         PODArray<TestStruct> testArray(kInitialSize);
         for (unsigned i = 0; i < kNumElems; i++) {
-            testArray.push_back({1.0f, (int)i});
+            testArray[i] = {1.0f, (int)i};
         }
-        SDL_Log("Took %ld", std::chrono::duration_cast<std::chrono::nanoseconds>(
+        SDL_Log("Took %lld", std::chrono::duration_cast<std::chrono::nanoseconds>(
                                 std::chrono::high_resolution_clock::now() - timepoint)
                                 .count());
     }
 
     {
         auto timepoint = std::chrono::high_resolution_clock::now();
-        PODArray<TestStruct> testArray2(kInitialSize);
+        PODArray<TestStruct> testArray(kInitialSize);
         for (unsigned i = 0; i < kNumElems; i++) {
-            TestStruct& test = testArray2.create_back();
-            test.health = 1.0f;
-            test.number = i;
+            testArray[i].health = 1.0f;
+            testArray[i].health = i;
         }
-        SDL_Log("Took %ld", std::chrono::duration_cast<std::chrono::nanoseconds>(
+        SDL_Log("Took %lld", std::chrono::duration_cast<std::chrono::nanoseconds>(
                                 std::chrono::high_resolution_clock::now() - timepoint)
                                 .count());
+    }
+}
+
+#include <container/PODVector.hpp>
+
+void testVector() {
+    {
+        auto timepoint = std::chrono::high_resolution_clock::now();
+        std::vector<int> coisa;
+        coisa.push_back(1);
+        coisa.push_back(2);
+        coisa.push_back(3);
+        coisa.push_back(4);
+        coisa.push_back(5);
+
+        coisa.erase(std::find(coisa.cbegin(), coisa.cend(), 3));
+        SDL_Log("std::vector Took %lld", std::chrono::duration_cast<std::chrono::nanoseconds>(
+                                            std::chrono::high_resolution_clock::now() - timepoint)
+                                            .count());
     }
 
     {
         auto timepoint = std::chrono::high_resolution_clock::now();
-        PODArray<TestStruct> testArray2(kInitialSize);
-        for (unsigned i = 0; i < kNumElems; i++) {
-            TestStruct& test = testArray2.create_back();
-            test = {1.0f, (int)i};
-        }
-        SDL_Log("Took %ld", std::chrono::duration_cast<std::chrono::nanoseconds>(
-                                std::chrono::high_resolution_clock::now() - timepoint)
-                                .count());
+        PODVector<int> vector;
+        vector.push_back(1);
+        vector.push_back(2);
+        vector.push_back(3);
+        vector.push_back(4);
+        vector.push_back(5);
+
+        vector.erase(3);
+        SDL_Log("PODVector Took %lld", std::chrono::duration_cast<std::chrono::nanoseconds>(
+                                          std::chrono::high_resolution_clock::now() - timepoint)
+                                          .count());
     }
+
+    {
+        auto timepoint = std::chrono::high_resolution_clock::now();
+        PODVector<int> vector2;
+        vector2.push_back(1);
+        vector2.push_back(2);
+        vector2.push_back(3);
+        vector2.push_back(4);
+        vector2.push_back(5);
+
+        vector2.fast_erase(3);
+        SDL_Log("PODVector fast Took %lld", std::chrono::duration_cast<std::chrono::nanoseconds>(
+                                          std::chrono::high_resolution_clock::now() - timepoint)
+                                          .count());
+    }
+
+    SDL_Log("End");
 }
 
 #include <core/String.hpp>
@@ -141,11 +179,46 @@ void testStringID() {
     }
 }
 
+#include <container/ObjectPool.hpp>
+
+struct TestClass {
+    int i;
+};
+
+void testObjectPool() {
+    //   ObjectPool<TestClass> objectPool1;
+    //   ObjectPoolHandle handle0 = objectPool1.getNewHandle();
+    //   objectPool1[handle0].i = 9;
+    //   ObjectPoolHandle handle1 = objectPool1.getNewHandle();
+    //   objectPool1[handle1].i = 98;
+    //   ObjectPoolHandle handle2 = objectPool1.getNewHandle();
+    //   objectPool1[handle2].i = 987;
+    //   ObjectPoolHandle handle3 = objectPool1.getNewHandle();
+    //   objectPool1[handle3].i = 9876;
+    //
+    // objectPool1.releaseHandle(handle0);
+    //   objectPool1.releaseHandle(handle2);
+    //   objectPool1.releaseHandle(handle1);
+    //   objectPool1.releaseHandle(handle3);
+    //   objectPool1.releaseHandle(handle3);
+
+    // handle3 = objectPool1.getNewHandle();
+    //   objectPool1[handle3].i = 0;
+    //   handle1 = objectPool1.getNewHandle();
+    //   objectPool1[handle1].i = 0;
+    //   handle2 = objectPool1.getNewHandle();
+    //   objectPool1[handle2].i = 0;
+    //   handle0 = objectPool1.getNewHandle();
+    //   objectPool1[handle0].i = 0;
+}
+
 int main(int argc, char* argv[]) {
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
-    // testArray();
-    // testString();
+    testArray();
+    testVector();
+    testString();
     testStringID();
+    testObjectPool();
 
     return 0;
 }
