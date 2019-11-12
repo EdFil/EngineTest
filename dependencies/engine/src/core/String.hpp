@@ -10,10 +10,10 @@ public:
     String(String&& string) noexcept;
     ~String();
 
-    bool isEmpty() const { return _length == 0; }
-    const char* data() const { return _data; }
-    Uint32 length() const { return _length; }
-    Uint32 capacity() const { return _capacity; }
+    bool isEmpty() const { return m_length == 0; }
+    const char* data() const { return m_pData; }
+    Uint32 length() const { return m_length; }
+    Uint32 capacity() const { return m_capacity; }
 
     bool operator==(const char* const rhs) const;
     bool operator==(const String& rhs) const;
@@ -23,9 +23,9 @@ public:
     String& operator=(String&& rhs) noexcept;
 
 private:
-    char* _data = nullptr;
-    Uint32 _length = 0;
-    Uint32 _capacity = 0;
+    char* m_pData = nullptr;
+    Uint32 m_length = 0;
+    Uint32 m_capacity = 0;
 
     bool init(const char* const data);
     bool init(const char* const data, Uint32 length);

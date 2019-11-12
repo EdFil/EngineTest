@@ -1,37 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <AutoVisualizer xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
-  <Type Name="PODArray&lt;*&gt;">
-    <DisplayString>{{ size={_size} }}</DisplayString>
+  <Type Name="Array&lt;*&gt;">
+    <DisplayString>{{ size={m_size} }}</DisplayString>
     <Expand>
+      <Item Name="[m_size]">m_size</Item>
+      <Item Name="[m_capacity]">m_capacity</Item>
       <ArrayItems>
-        <Size>_size</Size>
-        <ValuePointer>_data</ValuePointer>
+        <Size>m_size</Size>
+        <ValuePointer>m_pData</ValuePointer>
       </ArrayItems>
     </Expand>
   </Type>
 
-  <Type Name="PODVector&lt;*&gt;">
-    <DisplayString>{{ size={_size} }}</DisplayString>
+  <Type Name="ObjectArray&lt;*&gt;">
+    <DisplayString>{{ size={m_array.m_size} }}</DisplayString>
     <Expand>
-      <Item Name="[capacity]">_vector._size</Item>
+      <Item Name="[m_size]">m_array.m_size</Item>
+      <Item Name="[m_capacity]">m_array.m_capacity</Item>
       <ArrayItems>
-        <Size>_size</Size>
-        <ValuePointer>_vector._data</ValuePointer>
+        <Size>m_array.m_size</Size>
+        <ValuePointer>m_array.m_pData</ValuePointer>
       </ArrayItems>
     </Expand>
   </Type>
 
-  <Type Name="ObjectPool&lt;*&gt;">
-    <DisplayString>{{ size={m_objects._size} }}</DisplayString>
-    <Expand>
-      <Item Name="[size]" ExcludeView="simple">m_objects._size</Item>
-      <Item Name="[capacity]" ExcludeView="simple">m_objects._capacity</Item>
-      <ArrayItems>
-        <Size>m_objects._size</Size>
-        <ValuePointer>m_objects._data</ValuePointer>
-      </ArrayItems>
-    </Expand>
+  <Type Name="String">
+    <DisplayString> { m_pData, [m_length]s } </DisplayString>
   </Type>
 
 </AutoVisualizer>

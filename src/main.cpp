@@ -5,6 +5,7 @@
 
 #include <Scene.hpp>
 #include <container/Array.hpp>
+#include <container/ObjectArray.hpp>
 #include <container/ObjectPool.hpp>
 #include <container/PODVector.hpp>
 #include <core/String.hpp>
@@ -49,21 +50,24 @@ public:
 };
 
 struct TestStruct {
-    float health;
     int number;
 
-    TestStruct() : health(0.0f), number(0) { SDL_Log("Constructor1"); }
-    TestStruct(float health, int number) : health(health), number(number) {
-        SDL_Log("Constructor2");
+    TestStruct() : number(0) { SDL_Log("Constructor1"); }
+    TestStruct(int number) : number(number) { SDL_Log("Constructor2"); }
+    TestStruct(const TestStruct& other) noexcept : number(other.number) {
+        SDL_Log("Copy Constructor");
     }
-    TestStruct(const TestStruct&) noexcept { SDL_Log("Copy Constructor"); }
-    TestStruct(TestStruct&&) noexcept { SDL_Log("Move Constructor"); }
-    TestStruct& operator=(const TestStruct&) {
+    TestStruct(TestStruct&& other) noexcept : number(std::move(other.number)) {
+        SDL_Log("Move Constructor");
+    }
+    TestStruct& operator=(const TestStruct& rhs) {
         SDL_Log("Copy Operator");
+        number = rhs.number;
         return *this;
     }
-    TestStruct& operator=(TestStruct&&) noexcept {
+    TestStruct& operator=(TestStruct&& rhs) noexcept {
         SDL_Log("Move Operator");
+        number = rhs.number;
         return *this;
     }
     ~TestStruct() { SDL_Log("Destructor"); }
@@ -72,14 +76,16 @@ struct TestStruct {
 #include <chrono>
 
 void testArray() {
-    Array<TestStruct, false> testArray;
-    printf("resize 2\n");
-    testArray.resize(2);
-    printf("resize 4\n");
+    ObjectArray<String> testArray;
+    testArray.push_back({"This is a string 1"});
+    testArray.push_back({"This is a string 2"});
+    testArray.push_back({"This is a string 3"});
+    testArray.push_back({"This is a string 4"});
+    testArray.push_back({"This is a string 5"});
+    testArray.push_back({"This is a string 6"});
+    testArray.push_back({"This is a string 7"});
+    testArray.push_back({"This is a string 8"});
     testArray.resize(4);
-    printf("resize 2\n");
-    testArray.resize(2);
-    printf("end\n");
 
     // const unsigned kInitialSize = 1000;
     // const unsigned kNumElems = 1000;
@@ -128,37 +134,37 @@ void testVector() {
                     .count());
     }
 
-    {
-        auto timepoint = std::chrono::high_resolution_clock::now();
-        PODVector<int> vector;
-        vector.push_back(1);
-        vector.push_back(2);
-        vector.push_back(3);
-        vector.push_back(4);
-        vector.push_back(5);
+    //{
+    //    auto timepoint = std::chrono::high_resolution_clock::now();
+    //    PODVector<int> vector;
+    //    vector.push_back(1);
+    //    vector.push_back(2);
+    //    vector.push_back(3);
+    //    vector.push_back(4);
+    //    vector.push_back(5);
 
-        vector.erase(3);
-        SDL_Log("PODVector Took %lld",
-                (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now() - timepoint)
-                    .count());
-    }
+    //    vector.erase(3);
+    //    SDL_Log("PODVector Took %lld",
+    //            (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
+    //                std::chrono::high_resolution_clock::now() - timepoint)
+    //                .count());
+    //}
 
-    {
-        auto timepoint = std::chrono::high_resolution_clock::now();
-        PODVector<int> vector2;
-        vector2.push_back(1);
-        vector2.push_back(2);
-        vector2.push_back(3);
-        vector2.push_back(4);
-        vector2.push_back(5);
+    //{
+    //    auto timepoint = std::chrono::high_resolution_clock::now();
+    //    PODVector<int> vector2;
+    //    vector2.push_back(1);
+    //    vector2.push_back(2);
+    //    vector2.push_back(3);
+    //    vector2.push_back(4);
+    //    vector2.push_back(5);
 
-        vector2.fast_erase(3);
-        SDL_Log("PODVector fast Took %lld",
-                (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now() - timepoint)
-                    .count());
-    }
+    //    vector2.fast_erase(3);
+    //    SDL_Log("PODVector fast Took %lld",
+    //            (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
+    //                std::chrono::high_resolution_clock::now() - timepoint)
+    //                .count());
+    //}
 
     SDL_Log("End");
 }

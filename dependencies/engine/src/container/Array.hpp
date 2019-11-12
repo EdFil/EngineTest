@@ -6,11 +6,13 @@
 
 #include <utility>
 
-template <typename T, bool isObject = true>
+template <typename T> class ObjectArray;
+
+template <typename T>
 class Array {
 public:
     Array();
-    Array(Uint32 size);
+    explicit Array(Uint32 size);
     ~Array();
 
     /** Returns true is array is empty */
@@ -19,8 +21,17 @@ public:
     /** Returns the number of elements in the array */
     Uint32 size() const;
 
+	/** Returns the number of elements in the array */
+    Uint32 capacity() const;
+
     /** Resize the array so it can fit 'size' elements */
     bool resize(Uint32 size);
+
+	/** Create a element on the back and return a reference to it */
+	T& create_back();
+
+	/** Copy this element to the back to the array */
+	void push_back(const T& object);
 
     /** Gets array element on index 'index' */
     T& operator[](Uint32 index);
@@ -53,136 +64,134 @@ public:
     const T& back() const;
 
 private:
-    Uint32 _size;
-    T* _data;
+    Uint32 m_size;
+    Uint32 m_capacity;
+    T* m_pData;
+
+	friend class ObjectArray<T>;
 };
 
 // -----------------
 
-template <typename T, bool isObject>
-Array<T, isObject>::Array() : _size(0), _data(nullptr) {
+template <typename T>
+Array<T>::Array() : m_size(0), m_capacity(0), m_pData(nullptr) {
 }
 
-template <typename T, bool isObject>
-Array<T, isObject>::Array(Uint32 size) : _size(0), _data(nullptr) {
+template <typename T>
+Array<T>::Array(Uint32 size) : m_size(0), m_capacity(0), m_pData(nullptr) {
     resize(size);
 }
 
-template <typename T, bool isObject>
-Array<T, isObject>::~Array() {
-    if (isObject) {
-        for (Uint32 i = 0; i < _size; i++) {
-            _data[i].~T();
-        }
-    }
-
-    SDL_free(_data);
+template <typename T>
+Array<T>::~Array() {
+    SDL_free(m_pData);
 }
 
-template <typename T, bool isObject>
-bool Array<T, isObject>::isEmpty() const {
-    return _size == 0;
+template <typename T>
+bool Array<T>::isEmpty() const {
+    return m_size == 0;
 }
 
-template <typename T, bool isObject>
-Uint32 Array<T, isObject>::size() const {
-    return _size;
+template <typename T>
+Uint32 Array<T>::size() const {
+    return m_size;
 }
 
-template <typename T, bool isObject>
-bool Array<T, isObject>::resize(Uint32 size) {
-    if (size == 0 || _size == size) return false;
+template <typename T>
+Uint32 Array<T>::capacity() const {
+    return m_capacity;
+}
 
-    if (void* newData = SDL_malloc(sizeof(T) * size)) {
+template <typename T>
+bool Array<T>::resize(Uint32 capacity) {
+    if (capacity == 0 || m_capacity == capacity) return false;
+
+    if (void* newData = SDL_malloc(sizeof(T) * capacity)) {
         T* castedNewData = static_cast<T*>(newData);
-        if (_size != 0) {
-            if (isObject) {
-                const Uint32 numObjectToMove = SDL_min(_size, size);
-                for (size_t i = 0; i < numObjectToMove; i++) {
-                    new (castedNewData + i) T(std::move(_data[i]));
-                }
+        if (m_size != 0) {
+            SDL_memcpy(newData, m_pData, sizeof(T) * SDL_min(capacity, m_capacity));
+            SDL_free(m_pData);
+        } 
 
-                if (size < _size) {
-                    for (Uint32 i = numObjectToMove; i < _size; i++) {
-                        castedNewData[i].~T();
-                    }
-                } else {
-                    for (size_t i = numObjectToMove; i < size; i++) {
-                        new (castedNewData + i) T();
-                    }
-                }
-            } else {
-                SDL_memcpy(newData, _data, sizeof(T) * SDL_min(size, _size));
-            }
-
-            SDL_free(_data);
-        } else if (isObject) {
-            for (size_t i = 0; i < size; i++) {
-                new (castedNewData + i) T();
-            }
-        }
-
-        _data = castedNewData;
-        _size = size;
+        m_pData = castedNewData;
+        m_capacity = capacity;
+        m_size = SDL_min(m_size, capacity);
         return true;
     } else {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "[PODArray::resize] Error allocating memory.");
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "[Array::resize] Error allocating memory.");
         return false;
     }
 }
 
-template <typename T, bool isObject>
-T& Array<T, isObject>::operator[](Uint32 index) {
-    SDL_assert(index < _size);
-    return _data[index];
+template <typename T>
+T& Array<T>::create_back() {
+    if (m_size == m_capacity) {
+        if (!resize(SDL_max(1, m_capacity * 2))) {
+            SDL_assert(false);
+        }
+    }
+
+    return m_pData[m_size++];
 }
 
-template <typename T, bool isObject>
-const T& Array<T, isObject>::operator[](Uint32 index) const {
-    SDL_assert(index < _size);
-    return _data[index];
+
+template <typename T>
+void Array<T>::push_back(const T& object) {
+    create_back() = object;
 }
 
-template <typename T, bool isObject>
-T* Array<T, isObject>::begin() {
-    return _data;
+template <typename T>
+T& Array<T>::operator[](Uint32 index) {
+    SDL_assert(index < m_size);
+    return m_pData[index];
 }
 
-template <typename T, bool isObject>
-const T* Array<T, isObject>::begin() const {
-    return _data;
+template <typename T>
+const T& Array<T>::operator[](Uint32 index) const {
+    SDL_assert(index < m_size);
+    return m_pData[index];
 }
 
-template <typename T, bool isObject>
-T* Array<T, isObject>::end() {
-    return _data + _size;
+template <typename T>
+T* Array<T>::begin() {
+    return m_pData;
 }
 
-template <typename T, bool isObject>
-const T* Array<T, isObject>::end() const {
-    return _data + _size;
+template <typename T>
+const T* Array<T>::begin() const {
+    return m_pData;
 }
 
-template <typename T, bool isObject>
-T& Array<T, isObject>::front() {
-    SDL_assert(_size > 0);
-    return _data[0];
+template <typename T>
+T* Array<T>::end() {
+    return m_pData + m_size;
 }
 
-template <typename T, bool isObject>
-const T& Array<T, isObject>::front() const {
-    SDL_assert(_size > 0);
-    return _data[0];
+template <typename T>
+const T* Array<T>::end() const {
+    return m_pData + m_size;
 }
 
-template <typename T, bool isObject>
-T& Array<T, isObject>::back() {
-    SDL_assert(_size > 0);
-    return _data[_size - 1];
+template <typename T>
+T& Array<T>::front() {
+    SDL_assert(m_size > 0);
+    return m_pData[0];
 }
 
-template <typename T, bool isObject>
-const T& Array<T, isObject>::back() const {
-    SDL_assert(_size > 0);
-    return _data[_size - 1];
+template <typename T>
+const T& Array<T>::front() const {
+    SDL_assert(m_size > 0);
+    return m_pData[0];
+}
+
+template <typename T>
+T& Array<T>::back() {
+    SDL_assert(m_size > 0);
+    return m_pData[m_size - 1];
+}
+
+template <typename T>
+const T& Array<T>::back() const {
+    SDL_assert(m_size > 0);
+    return m_pData[m_size - 1];
 }

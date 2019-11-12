@@ -6,7 +6,7 @@ namespace string_internal {
     char kEmptyString[] = "";
 }
 
-String::String() : _data(string_internal::kEmptyString) {
+String::String() : m_pData(string_internal::kEmptyString) {
 }
 
 String::String(const char* data) {
@@ -14,17 +14,20 @@ String::String(const char* data) {
 }
 
 String::String(const String& other) {
-    init(other._data, other._length);
+    init(other.m_pData, other.m_length);
 }
 
 String::String(String&& other) noexcept {
-    SDL_memcpy(this, &other, sizeof(String));
+    m_pData = other.m_pData;
+    m_capacity = other.m_capacity;
+    m_length = other.m_length;
+    
     SDL_memset(&other, 0, sizeof(String));
 }
 
 String::~String() {
-    if (_capacity > 0) {
-        SDL_free(_data);
+    if (m_capacity > 0) {
+        SDL_free(m_pData);
     }
 }
 
@@ -33,11 +36,11 @@ bool String::operator==(const char* rhs) const {
         return false;
     }
 
-    return SDL_strcmp(_data, rhs) == 0;
+    return SDL_strcmp(m_pData, rhs) == 0;
 }
 
 bool String::operator==(const String& rhs) const {
-    return SDL_strcmp(_data, rhs._data) == 0;
+    return SDL_strcmp(m_pData, rhs.m_pData) == 0;
 }
 
 String& String::operator=(const char* rhs) {
@@ -46,7 +49,7 @@ String& String::operator=(const char* rhs) {
 }
 
 String& String::operator=(const String& rhs) {
-    init(rhs._data, rhs._length);
+    init(rhs.m_pData, rhs.m_length);
     return *this;
 }
 
@@ -58,8 +61,8 @@ String& String::operator=(String&& rhs) noexcept {
 
 bool String::init(const char* const data) {
     if (data == nullptr || data[0] == '\0') {
-        _data = string_internal::kEmptyString;
-        _length = 0;
+        m_pData = string_internal::kEmptyString;
+        m_length = 0;
         return false;
     } else {
         Uint32 length = SDL_strlen(data);
@@ -71,7 +74,7 @@ bool String::init(const char* const data, Uint32 length) {
     const Uint32 newDataSize = sizeof(char) * (length + 1);
 
     // If we need to allocate memory
-    if (length > _capacity) {
+    if (length > m_capacity) {
         // Allocate
         char* newData = static_cast<char*>(SDL_malloc(newDataSize));
         if (newData == nullptr) {
@@ -92,22 +95,22 @@ bool String::init(const char* const data, Uint32 length) {
         }
 
         // Cleanup old
-        if (_capacity != 0) {
-            SDL_free(_data);
+        if (m_capacity != 0) {
+            SDL_free(m_pData);
         }
 
-        _data = newData;
-        _length = _capacity = length;
+        m_pData = newData;
+        m_length = m_capacity = length;
     } else {
         // Copy
-        if (!SDL_memcpy(_data, data, newDataSize)) {
+        if (!SDL_memcpy(m_pData, data, newDataSize)) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                          "[String::init] (%p) Error on memcpy(%p, %p, %d)", (void*)this,
-                         (void*)_data, (void*)data, newDataSize);
+                         (void*)m_pData, (void*)data, newDataSize);
             return false;
         }
 
-        _length = length;
+        m_length = length;
     }
 
     return true;
