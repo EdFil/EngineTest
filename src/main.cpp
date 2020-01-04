@@ -17,38 +17,6 @@
 #include <iostream>
 #include <vector>
 
-#define NUM_ENTITIES 100000
-class MyScene : public Scene {
-public:
-    EntityID m_entities[NUM_ENTITIES];
-
-    void onCreated() override { _engine->entityManager().initWithCapacity(10); }
-
-    void update(float) override {
-        for (auto& m_entity : m_entities) {
-            m_entity = _engine->entityManager().createEntity();
-        }
-
-        EntityID entitiesToDestroy[] = {m_entities[0], m_entities[5], m_entities[9]};
-        for (EntityID& entity : entitiesToDestroy) {
-            _engine->entityManager().destroyEntity(entity);
-        }
-
-        for (auto& m_entity : m_entities) {
-            (void)m_entity;
-            _engine->entityManager().createEntity();
-        }
-
-        _engine->shutdown();
-    }
-
-    void onDestroy() override {
-        for (auto& m_entity : m_entities) {
-            _engine->entityManager().destroyEntity(m_entity);
-        }
-    }
-};
-
 struct TestStruct {
     int number;
 
@@ -75,7 +43,7 @@ struct TestStruct {
 
 #include <chrono>
 
-void testArray() {
+void testObjectArray() {
     ObjectArray<String> testArray;
     testArray.push_back({"This is a string 1"});
     testArray.push_back({"This is a string 2"});
@@ -117,55 +85,19 @@ void testArray() {
     // }
 }
 
-void testVector() {
-    {
-        auto timepoint = std::chrono::high_resolution_clock::now();
-        std::vector<int> coisa;
-        coisa.push_back(1);
-        coisa.push_back(2);
-        coisa.push_back(3);
-        coisa.push_back(4);
-        coisa.push_back(5);
+void testArray() {
+    Array<TestStruct> array;
+    array.create_back();
+    array.create_back();
+    array.create_back();
+    array.create_back();
+    array.create_back();
+    array.create_back();
 
-        coisa.erase(std::find(coisa.cbegin(), coisa.cend(), 3));
-        SDL_Log("std::vector Took %lld",
-                (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now() - timepoint)
-                    .count());
-    }
-
-    //{
-    //    auto timepoint = std::chrono::high_resolution_clock::now();
-    //    PODVector<int> vector;
-    //    vector.push_back(1);
-    //    vector.push_back(2);
-    //    vector.push_back(3);
-    //    vector.push_back(4);
-    //    vector.push_back(5);
-
-    //    vector.erase(3);
-    //    SDL_Log("PODVector Took %lld",
-    //            (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
-    //                std::chrono::high_resolution_clock::now() - timepoint)
-    //                .count());
-    //}
-
-    //{
-    //    auto timepoint = std::chrono::high_resolution_clock::now();
-    //    PODVector<int> vector2;
-    //    vector2.push_back(1);
-    //    vector2.push_back(2);
-    //    vector2.push_back(3);
-    //    vector2.push_back(4);
-    //    vector2.push_back(5);
-
-    //    vector2.fast_erase(3);
-    //    SDL_Log("PODVector fast Took %lld",
-    //            (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
-    //                std::chrono::high_resolution_clock::now() - timepoint)
-    //                .count());
-    //}
-
+	array.reserve(2);
+    array.resize(2);
+    array.resize(20);
+ 
     SDL_Log("End");
 }
 
@@ -241,16 +173,33 @@ void testObjectPool() {
     //   objectPool1[handle0].i = 0;
 }
 
+void testEntityManager() {
+    EntityManager manager;
+    manager.initWithCapacity(4);
+
+	Entity entity1_0 = manager.createEntity();
+    Entity entity2_0 = manager.createEntity();
+    manager.destroyEntity(entity1_0);
+
+    Entity entity1_1 = manager.createEntity();
+    Entity entity3_0 = manager.createEntity();
+    Entity entity4_0 = manager.createEntity();
+    Entity entity5_0 = manager.createEntity();
+
+	manager.destroyEntity(entity1_0);
+}
+
 int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
     testArray();
-    // testVector();
+    testObjectArray();
     // testString();
     // testStringID();
     // testObjectPool();
+    testEntityManager();
 
     return 0;
 }

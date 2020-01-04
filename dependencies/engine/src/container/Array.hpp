@@ -6,7 +6,8 @@
 
 #include <utility>
 
-template <typename T> class ObjectArray;
+template <typename T>
+class ObjectArray;
 
 template <typename T>
 class Array {
@@ -21,17 +22,19 @@ public:
     /** Returns the number of elements in the array */
     Uint32 size() const;
 
-	/** Returns the number of elements in the array */
+    /** Returns the number of elements in the array */
     Uint32 capacity() const;
 
     /** Resize the array so it can fit 'size' elements */
     bool resize(Uint32 size);
 
-	/** Create a element on the back and return a reference to it */
-	T& create_back();
+    bool reserve(Uint32 size);
 
-	/** Copy this element to the back to the array */
-	void push_back(const T& object);
+    /** Create a element on the back and return a reference to it */
+    T& create_back();
+
+    /** Copy this element to the back to the array */
+    void push_back(const T& object);
 
     /** Gets array element on index 'index' */
     T& operator[](Uint32 index);
@@ -68,7 +71,9 @@ private:
     Uint32 m_capacity;
     T* m_pData;
 
-	friend class ObjectArray<T>;
+    friend class ObjectArray<T>;
+
+    bool alloc(Uint32 capacity);
 };
 
 // -----------------
@@ -79,7 +84,7 @@ Array<T>::Array() : m_size(0), m_capacity(0), m_pData(nullptr) {
 
 template <typename T>
 Array<T>::Array(Uint32 size) : m_size(0), m_capacity(0), m_pData(nullptr) {
-    resize(size);
+    reserve(size);
 }
 
 template <typename T>
@@ -103,37 +108,39 @@ Uint32 Array<T>::capacity() const {
 }
 
 template <typename T>
-bool Array<T>::resize(Uint32 capacity) {
-    if (capacity == 0 || m_capacity == capacity) return false;
-
-    if (void* newData = SDL_malloc(sizeof(T) * capacity)) {
-        T* castedNewData = static_cast<T*>(newData);
-        if (m_size != 0) {
-            SDL_memcpy(newData, m_pData, sizeof(T) * SDL_min(capacity, m_capacity));
-            SDL_free(m_pData);
-        } 
-
-        m_pData = castedNewData;
-        m_capacity = capacity;
-        m_size = SDL_min(m_size, capacity);
+bool Array<T>::reserve(Uint32 capacity) {
+    if (m_capacity >= capacity) {
         return true;
-    } else {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "[Array::resize] Error allocating memory.");
+    }
+
+    return alloc(capacity);
+}
+
+template <typename T>
+bool Array<T>::resize(Uint32 capacity) {
+    Uint32 oldCapacity = m_capacity;
+    if (!alloc(capacity)) {
         return false;
     }
+
+    m_size = capacity;
+    if (capacity > oldCapacity) {
+        return SDL_memset(m_pData + oldCapacity, 0, sizeof(T) * (capacity - oldCapacity));
+    }
+
+    return true;
 }
 
 template <typename T>
 T& Array<T>::create_back() {
     if (m_size == m_capacity) {
-        if (!resize(SDL_max(1, m_capacity * 2))) {
+        if (!reserve(SDL_max(1, m_capacity * 2))) {
             SDL_assert(false);
         }
     }
 
     return m_pData[m_size++];
 }
-
 
 template <typename T>
 void Array<T>::push_back(const T& object) {
@@ -194,4 +201,25 @@ template <typename T>
 const T& Array<T>::back() const {
     SDL_assert(m_size > 0);
     return m_pData[m_size - 1];
+}
+
+template <typename T>
+bool Array<T>::alloc(Uint32 capacity) {
+    if (capacity == 0 || m_capacity == capacity) return false;
+
+    if (void* newData = SDL_malloc(sizeof(T) * capacity)) {
+        T* castedNewData = static_cast<T*>(newData);
+        if (m_size != 0) {
+            SDL_memcpy(newData, m_pData, sizeof(T) * SDL_min(capacity, m_capacity));
+            SDL_free(m_pData);
+        }
+
+        m_pData = castedNewData;
+        m_capacity = capacity;
+        m_size = SDL_min(m_size, capacity);
+        return true;
+    } else {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "[Array::resize] Error allocating memory.");
+        return false;
+    }
 }

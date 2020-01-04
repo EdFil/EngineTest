@@ -1,66 +1,41 @@
-// #pragma once
+#pragma once
 
-// #include <vector>
-// #include <map>
+#include "math/Vector3f.hpp"
+#include "container/Array.hpp"
 
-// #include "math/Vector3f.hpp"
-// #include "math/Matrix4f.hpp"
+#include "ecs/EntityManager.hpp"
 
-// #include "ECS.hpp"
+#include <multi>
 
-// struct TransformInstance {
-//    uint32_t id;
-// };
+//  Depth
+//   [1] --> [A, B, C]
+//   [2] --> [A, B, B, B, C, C] 
+//   [3] --> [A, C, C, C]
 
-// struct TransformComponentData {
-//    uint32_t size;
-//    uint32_t capacity;
-//    void* buffer;
-
-//    Matrix4f* world;
-//    Vector3f* localPosition;
-//    Vector3f* localRotation;
-//    Vector3f* localScale;
-
-//    TransformInstance* parent;
-//    TransformInstance* firstChild;
-//    TransformInstance* nextSibling;
-//    TransformInstance* previousSibling;
-
-//    EntityID* entity;
-// };
-
-// struct TransformComponent {
-// 	Vector3f position;
-// };
-
-// struct TransformWrapper {
-// 	TransformComponent component;
-//    LocalHandle nextComponentHandle;
-//    ComponentStatus status;
-// };
-
-// namespace transform_system_globals {
-//    static const GlobalHandle k_transformHandlePrefix = 0x00010000;
-//    static TransformComponent g_invalidTransformComponent = TransformComponent();
-// }
-
-// class TransformSystem {
-// public:
-//    TransformComponentData _data;
+//   [            A             ]
+//   [A,    B,    C,      D     ]
+//   [A] [A B C] [] [A, B, C, D]
 
 
-//    std::map<GlobalHandle, TransformInstance> _entityTransformMap;
+struct TransformComponent {
+    Vector3f m_localPosition;
+    Vector3f m_worldPosition;
+    Vector3f m_rotation;
+};
 
-// 	TransformSystem() = default;
-// 	TransformSystem(const TransformSystem&& rhs) = delete;
-// 	TransformSystem(TransformSystem&& rhs) = delete;
-// 	TransformSystem& operator=(const TransformSystem& rhs) = delete;
-// 	TransformSystem& operator=(const TransformSystem&& rhs) = delete;
+struct SceneGraphComponent {
+    TransformComponent* parent;
+    Array<SceneGraphComponent> m_children;
+};
 
-//    void initWithCapacity(int16_t capacity);
-//    GlobalHandle create();
-// 	GlobalHandle create(const Vector3f& position);
-//    void destroy(GlobalHandle globalHandle);
-//    TransformComponent& get(GlobalHandle globalHandle);
-// };
+class TransformSystem {
+    TransformSystem() = default;
+    TransformSystem(const TransformSystem& rhs) = delete;
+    TransformSystem(const TransformSystem&& rhs) = delete;
+    TransformSystem& operator=(const TransformSystem& rhs) = delete;
+    TransformSystem& operator=(const TransformSystem&& rhs) = delete;
+
+	TransformComponent getComponent(const Entity& entity);
+
+	<Entity, TransformComponent>
+};
