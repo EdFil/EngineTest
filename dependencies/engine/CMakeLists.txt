@@ -29,13 +29,6 @@ add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2")
 message(STATUS "") 
 message(STATUS "=== STB ===")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/stb")
-
-if (BUILD_TESTS)
-    message(STATUS "") 
-    message(STATUS "=== GTEST ===")
-    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/gtest")
-endif()
-
 message(STATUS "") 
 message(STATUS "=== Resources ===")
 if(NOT RESOURCES_DIR)
