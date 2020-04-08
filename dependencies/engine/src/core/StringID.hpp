@@ -30,7 +30,7 @@ inline constexpr uint32_t compile_time_hash() {
 #ifdef DEBUG
 #define SID(__STRING__) StringID(HASH(__STRING__), __STRING__)
 #else
-#define SID(__STRING__) StringID(HASh(__STRING__))
+#define SID(__STRING__) StringID(HASH(__STRING__))
 #endif
 
 class StringID {

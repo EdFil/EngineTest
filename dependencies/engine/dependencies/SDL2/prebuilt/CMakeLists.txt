@@ -2,22 +2,16 @@ if(WIN32)
     set(SDL2_DIR "${CMAKE_CURRENT_SOURCE_DIR}/windows")
     find_package(SDL2 REQUIRED)
 
-    if (NOT SDL2_INCLUDE_DIR OR NOT SDL2_LIBRARY)
-        message (FATAL_ERROR "SDL2 libs not found in ${SDL2_DIR}")
+    if(NOT SDL2_INCLUDE_DIR OR NOT SDL2_LIBRARY)
+        message(FATAL_ERROR "SDL2 libs not found in ${SDL2_DIR}")
     endif()
 
     add_library(SDL2 SHARED IMPORTED GLOBAL)
-    set_target_properties(SDL2
-        PROPERTIES
-        IMPORTED_IMPLIB "${SDL2_LIBRARY}"
-        INTERFACE_INCLUDE_DIRECTORIES "${SDL2_INCLUDE_DIR}"
-    )
+    set_target_properties(SDL2 PROPERTIES IMPORTED_IMPLIB "${SDL2_LIBRARY}" INTERFACE_INCLUDE_DIRECTORIES
+                                                                            "${SDL2_INCLUDE_DIR}")
 
     add_library(SDL2main SHARED IMPORTED GLOBAL)
-    set_target_properties(SDL2main
-        PROPERTIES
-        IMPORTED_IMPLIB "${SDL2MAIN_LIBRARY}"
-    )
+    set_target_properties(SDL2main PROPERTIES IMPORTED_IMPLIB "${SDL2MAIN_LIBRARY}")
 
     file(INSTALL ${SDL2_RUNTIME_LIBRARY} DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 

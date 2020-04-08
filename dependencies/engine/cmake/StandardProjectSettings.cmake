@@ -1,0 +1,36 @@
+option(ENABLE_CCACHE "Enable ccache compiler cache" OFF)
+option(ENABLE_IPO "Enable Iterprocedural Optimization, aka Link Time Optimization (LTO)" OFF)
+
+# Set a default build type if none was specified
+if(NOT CMAKE_BUILD_TYPE)
+    message(STATUS "Setting build type to 'Debug' as none was specified.")
+    set(CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build." FORCE)
+endif()
+
+if(ENABLE_CCACHE)
+    find_program(CCACHE ccache)
+    if(CCACHE)
+        message(STATUS "Using CCACHE")
+        set(CMAKE_CXX_COMPILER_LAUNCHER ${CCACHE})
+    else()
+        message(WARNING "Could not find CCACHE")
+    endif()
+endif()
+
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+if(ENABLE_IPO)
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT result OUTPUT output)
+    if(result)
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+        message(STATUS "Using IPO - Iterprocedural Optimization")
+    else()
+        message(WARNING "IPO is not supported: ${output}")
+    endif()
+endif()
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_BINARY_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_BINARY_DIR}/bin)

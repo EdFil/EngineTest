@@ -65,13 +65,13 @@ bool String::init(const char* const data) {
         m_length = 0;
         return false;
     } else {
-        Uint32 length = SDL_strlen(data);
+        Uint32 length = (Uint32)SDL_strlen(data);
         return init(data, length);
     }
 }
 
 bool String::init(const char* const data, Uint32 length) {
-    const Uint32 newDataSize = sizeof(char) * (length + 1);
+    const Uint32 newDataSize = (Uint32)sizeof(char) * (length + 1);
 
     // If we need to allocate memory
     if (length > m_capacity) {
