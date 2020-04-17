@@ -1,16 +1,16 @@
 #include <Constants.hpp>
 #include <Engine.hpp>
+#include <ecs/Entity.hpp>
+#include <ecs/TransformSystem.hpp>
 
 #include <SDL.h>
 
 #include <Scene.hpp>
 #include <container/Array.hpp>
-#include <container/ObjectArray.hpp>
-#include <container/ObjectPool.hpp>
-#include <container/PODVector.hpp>
 #include <core/String.hpp>
 #include <core/StringID.hpp>
 #include <math/Matrix4f.hpp>
+#include <memory/unique_ptr.hpp>
 
 #include <algorithm>
 #include <ctime>
@@ -38,67 +38,26 @@ struct TestStruct {
         number = rhs.number;
         return *this;
     }
-    ~TestStruct() { SDL_Log("Destructor"); }
+    bool operator==(const TestStruct& other) const { return number == other.number; }
+
+    ~TestStruct() {
+        SDL_Log("Destructor");
+        number = -1;
+    }
 };
 
 #include <chrono>
 
-void testObjectArray() {
-    ObjectArray<String> testArray;
-    testArray.push_back({"This is a string 1"});
-    testArray.push_back({"This is a string 2"});
-    testArray.push_back({"This is a string 3"});
-    testArray.push_back({"This is a string 4"});
-    testArray.push_back({"This is a string 5"});
-    testArray.push_back({"This is a string 6"});
-    testArray.push_back({"This is a string 7"});
-    testArray.push_back({"This is a string 8"});
-    testArray.resize(4);
-
-    // const unsigned kInitialSize = 1000;
-    // const unsigned kNumElems = 1000;
-    // {
-    //     auto timepoint = std::chrono::high_resolution_clock::now();
-    //     PODArray<TestStruct> testArray(kInitialSize);
-    //     for (unsigned i = 0; i < kNumElems; i++) {
-    //         testArray[i] = {1.0f, (int)i};
-    //     }
-    //     SDL_Log("Took %lld", (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
-    //                              std::chrono::high_resolution_clock::now() - timepoint)
-    //                              .count());
-    // }
-
-    // {
-    //     auto timepoint = std::chrono::high_resolution_clock::now();
-    //     PODArray<TestStruct> testArray(kInitialSize);
-    //     for (unsigned i = 0; i < kNumElems; i++) {
-    //         testArray[i].health = 1.0f;
-    //         testArray[i].health = i;
-    //     }
-    //     SDL_Log("Took %lld", (long long)std::chrono::duration_cast<std::chrono::nanoseconds>(
-    //                              std::chrono::high_resolution_clock::now() - timepoint)
-    //                              .count());
-
-    //     for (auto& elem : testArray) {
-    //         (void)elem;
-    //     }
-    // }
-}
-
 void testArray() {
-    Array<TestStruct> array;
-    array.create_back();
-    array.create_back();
-    array.create_back();
-    array.create_back();
-    array.create_back();
-    array.create_back();
+    edgine::Array<TestStruct> array2;
+    array2.create_back().number = 1;
 
-	array.reserve(2);
-    array.resize(2);
-    array.resize(20);
- 
-    SDL_Log("End");
+    edgine::Array<TestStruct> array;
+    array.create_back().number = 1;
+    array.create_back().number = 2;
+    array.create_back().number = 3;
+
+    array.erase(array2.find(1));
 }
 
 #define PRINT_STRING(__STRING__)                                                         \
@@ -142,51 +101,34 @@ void testStringID() {
     }
 }
 
-struct TestClass {
-    int i;
+class TestEntity : public edgine::Entity {
+public:
+    TestEntity(edgine::TransformSystem& transformSystem);
+
+private:
+    edgine::TransformComponent mTransformComponent;
 };
 
-void testObjectPool() {
-    //   ObjectPool<TestClass> objectPool1;
-    //   ObjectPoolHandle handle0 = objectPool1.getNewHandle();
-    //   objectPool1[handle0].i = 9;
-    //   ObjectPoolHandle handle1 = objectPool1.getNewHandle();
-    //   objectPool1[handle1].i = 98;
-    //   ObjectPoolHandle handle2 = objectPool1.getNewHandle();
-    //   objectPool1[handle2].i = 987;
-    //   ObjectPoolHandle handle3 = objectPool1.getNewHandle();
-    //   objectPool1[handle3].i = 9876;
-    //
-    // objectPool1.releaseHandle(handle0);
-    //   objectPool1.releaseHandle(handle2);
-    //   objectPool1.releaseHandle(handle1);
-    //   objectPool1.releaseHandle(handle3);
-    //   objectPool1.releaseHandle(handle3);
+void testEntityManager() {
+    edgine::EntityManager entityManager;
 
-    // handle3 = objectPool1.getNewHandle();
-    //   objectPool1[handle3].i = 0;
-    //   handle1 = objectPool1.getNewHandle();
-    //   objectPool1[handle1].i = 0;
-    //   handle2 = objectPool1.getNewHandle();
-    //   objectPool1[handle2].i = 0;
-    //   handle0 = objectPool1.getNewHandle();
-    //   objectPool1[handle0].i = 0;
+    // edgine::TransformSystem transformSystem;
+
+    // edgine::Entity entity = entityManager.createEntity();
+    // edgine::TransformComponent& component = transformSystem.addComponent(entity);
 }
 
-void testEntityManager() {
-    EntityManager manager;
-    manager.initWithCapacity(4);
+void testUniquePtr() {
+    edgine::unique_ptr<TestStruct> ptr(new TestStruct(10));
 
-	Entity entity1_0 = manager.createEntity();
-    Entity entity2_0 = manager.createEntity();
-    manager.destroyEntity(entity1_0);
+    edgine::unique_ptr<TestStruct> ptr2(std::move(ptr));
 
-    Entity entity1_1 = manager.createEntity();
-    Entity entity3_0 = manager.createEntity();
-    Entity entity4_0 = manager.createEntity();
-    Entity entity5_0 = manager.createEntity();
+    edgine::unique_ptr<TestStruct> ptr3 = std::move(ptr2);
 
-	manager.destroyEntity(entity1_0);
+    edgine::unique_ptr<TestStruct> ptr4;
+    ptr4.swap(ptr3);
+
+    ptr4.reset(new TestStruct(12));
 }
 
 int main(int argc, char* argv[]) {
@@ -194,12 +136,10 @@ int main(int argc, char* argv[]) {
     (void)argv;
 
     SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
-    testArray();
-    testObjectArray();
+    testUniquePtr();
     // testString();
     // testStringID();
-    // testObjectPool();
-    testEntityManager();
+    // testEntityManager();
 
     return 0;
 }

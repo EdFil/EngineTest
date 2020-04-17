@@ -1,24 +1,24 @@
 #pragma once
 
-#include <SDL_assert.h>
-#include <SDL_log.h>
-#include <SDL_stdinc.h>
-
-#include <new>
-#include <utility>
+#include "container/Array.hpp"
 
 namespace edgine {
-
     template <typename T>
-    class Array {
+    class Pool {
     public:
+        template <typename T>
+        struct Handle {
+            size_t m_index;
+            T m_object;
+        };
+
         typedef T* iterator;
         typedef const T* const_iterator;
 
-        Array();
-        explicit Array(size_t size);
+        Pool();
+        explicit Pool(size_t size);
 
-        ~Array();
+        ~Pool();
 
         /** Returns true is array is empty */
         bool isEmpty() const;
@@ -29,13 +29,10 @@ namespace edgine {
         /** Returns the number of elements in the array */
         size_t capacity() const;
 
-        /** Resize the array so it can fit 'size' elements */
-        bool resize(size_t size);
-
         bool reserve(size_t size);
 
-        /** Create a element on the back and return a reference to it */
-        T& create_back();
+        Handle* getObject();
+        void returnObject(Handle* handle);
 
         /** Copy this element to the back to the array */
         void push_back(const T& object);
@@ -78,9 +75,9 @@ namespace edgine {
         bool erase(iterator object);
 
     private:
+        Array<Handle<T>> m_array;
         size_t m_size;
-        size_t m_capacity;
-        T* m_pData;
+        size_t m_nextIndex;
 
         bool alloc(size_t capacity);
     };
@@ -90,160 +87,106 @@ namespace edgine {
 // -----------------
 
 template <typename T>
-edgine::Array<T>::Array() : m_size(0), m_capacity(0), m_pData(nullptr) {
+edgine::Pool<T>::Pool() : m_array(), m_nextIndex(0) {
 }
 
 template <typename T>
-edgine::Array<T>::Array(size_t size) : m_size(0), m_capacity(0), m_pData(nullptr) {
-    reserve(size);
+edgine::Pool<T>::Pool(size_t size) : m_array(size), m_nextIndex(0) {
 }
 
 template <typename T>
-edgine::Array<T>::~Array() {
-    for (size_t i = 0; i < m_size; i++) {
-        m_pData[i].~T();
-    }
-    SDL_free(m_pData);
+edgine::Pool<T>::~Pool() {
+
 }
 
 template <typename T>
-bool edgine::Array<T>::isEmpty() const {
-    return m_size == 0;
+bool edgine::Pool<T>::isEmpty() const {
+    return m_array.isEmpty();
 }
 
 template <typename T>
-size_t edgine::Array<T>::size() const {
+size_t edgine::Pool<T>::size() const {
     return m_size;
 }
 
 template <typename T>
-size_t edgine::Array<T>::capacity() const {
-    return m_capacity;
+size_t edgine::Pool<T>::capacity() const {
+    return m_array.capacity();
 }
 
 template <typename T>
-bool edgine::Array<T>::reserve(size_t capacity) {
-    if (m_capacity >= capacity) {
-        return true;
-    }
-
-    return alloc(capacity);
+bool edgine::Pool<T>::reserve(size_t capacity) {
+    return m_array.reserve();
 }
 
 template <typename T>
-bool edgine::Array<T>::resize(size_t capacity) {
-    if (capacity == 0 || m_capacity == capacity) return false;
-
-    if (void* newData = SDL_malloc(sizeof(T) * capacity)) {
-        T* castedNewData = static_cast<T*>(newData);
-        if (m_size != 0) {
-            const size_t numObjectToMove = SDL_min(m_size, capacity);
-            for (size_t i = 0; i < numObjectToMove; i++) {
-                new (m_pData) T();
-            }
-
-            if (capacity < m_size) {
-                for (size_t i = numObjectToMove; i < m_size; i++) {
-                    castedNewData[i].~T();
-                }
-            } else {
-                for (size_t i = numObjectToMove; i < capacity; i++) {
-                    new (castedNewData + i) T();
-                }
-            }
-        }
-
-        SDL_free(m_pData);
-        m_pData = castedNewData;
-        m_size = m_capacity = capacity;
-        return true;
-    } else {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "[Array::resize] Error allocating memory.");
-        return false;
-    }
-}
-
-template <typename T>
-T& edgine::Array<T>::create_back() {
-    if (m_size == m_capacity) {
-        if (!reserve(SDL_max(1, m_capacity * 2))) {
-            SDL_assert(false);
-        }
-    }
-
-    // new (m_pData + m_size) T();
-    return m_pData[m_size++];
-}
-
-template <typename T>
-void edgine::Array<T>::push_back(const T& object) {
+void edgine::Pool<T>::push_back(const T& object) {
     create_back() = object;
 }
 
 template <typename T>
-void edgine::Array<T>::push_back(T&& object) {
+void edgine::Pool<T>::push_back(T&& object) {
     create_back() = std::move(object);
 }
 
 template <typename T>
-T& edgine::Array<T>::operator[](size_t index) {
+T& edgine::Pool<T>::operator[](size_t index) {
     SDL_assert(index < m_size);
     return m_pData[index];
 }
 
 template <typename T>
-const T& edgine::Array<T>::operator[](size_t index) const {
+const T& edgine::Pool<T>::operator[](size_t index) const {
     SDL_assert(index < m_size);
     return m_pData[index];
 }
 
 template <typename T>
-typename edgine::Array<T>::iterator edgine::Array<T>::begin() {
+typename edgine::Pool<T>::iterator edgine::Pool<T>::begin() {
     return m_pData;
 }
 
 template <typename T>
-typename edgine::Array<T>::const_iterator edgine::Array<T>::begin() const {
+typename edgine::Pool<T>::const_iterator edgine::Pool<T>::begin() const {
     return m_pData;
 }
 
 template <typename T>
-typename edgine::Array<T>::iterator edgine::Array<T>::end() {
+typename edgine::Pool<T>::iterator edgine::Pool<T>::end() {
     return m_pData + m_size;
 }
 
 template <typename T>
-typename edgine::Array<T>::const_iterator edgine::Array<T>::end() const {
+typename edgine::Pool<T>::const_iterator edgine::Pool<T>::end() const {
     return m_pData + m_size;
 }
 
 template <typename T>
-T& edgine::Array<T>::front() {
+T& edgine::Pool<T>::front() {
     SDL_assert(m_size > 0);
     return m_pData[0];
 }
 
 template <typename T>
-const T& edgine::Array<T>::front() const {
+const T& edgine::Pool<T>::front() const {
     SDL_assert(m_size > 0);
     return m_pData[0];
 }
 
 template <typename T>
-T& edgine::Array<T>::back() {
+T& edgine::Pool<T>::back() {
     SDL_assert(m_size > 0);
     return m_pData[m_size - 1];
 }
 
 template <typename T>
-const T& edgine::Array<T>::back() const {
+const T& edgine::Pool<T>::back() const {
     SDL_assert(m_size > 0);
     return m_pData[m_size - 1];
 }
 
 template <typename T>
-typename edgine::Array<T>::iterator edgine::Array<T>::find(const T& object) const {
+typename edgine::Pool<T>::iterator edgine::Pool<T>::find(const T& object) const {
     for (size_t i = 0; i < m_size; i++) {
         if (m_pData[i] == object) {
             return m_pData + i;
@@ -254,7 +197,7 @@ typename edgine::Array<T>::iterator edgine::Array<T>::find(const T& object) cons
 }
 
 template <typename T>
-bool edgine::Array<T>::erase(Array<T>::iterator object) {
+bool edgine::Pool<T>::erase(Array<T>::iterator object) {
     if (object != nullptr) {
         size_t index = std::ptrdiff_t(object - begin());
 
@@ -275,7 +218,7 @@ bool edgine::Array<T>::erase(Array<T>::iterator object) {
 }
 
 template <typename T>
-bool edgine::Array<T>::alloc(size_t capacity) {
+bool edgine::Pool<T>::alloc(size_t capacity) {
     if (capacity == 0 || m_capacity == capacity) return false;
 
     if (void* newData = SDL_malloc(sizeof(T) * capacity)) {

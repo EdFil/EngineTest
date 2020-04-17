@@ -2,11 +2,11 @@
 
 #include <memory>
 
-//#include "ecs/TransformSystem.hpp"
+#include "ecs/TransformSystem.hpp"
 //#include "ecs/SpriteSystem.hpp"
 //#include "ecs/RandomMovementSystem.hpp"
-#include "ecs/EntityManager.hpp"
 #include "EventDispatcher.hpp"
+#include "ecs/EntityManager.hpp"
 
 struct SDL_Window;
 struct SDL_Renderer;
@@ -17,10 +17,10 @@ class Engine : public ApplicationEventDelegate {
 public:
     Engine();
     ~Engine();
-	Engine(const Engine& rhs) = delete;
-	Engine(const Engine&& rhs) = delete;
-	Engine& operator=(const Engine& rhs) = delete;
-	Engine& operator=(const Engine&& rhs) = delete;
+    Engine(const Engine& rhs) = delete;
+    Engine(const Engine&& rhs) = delete;
+    Engine& operator=(const Engine& rhs) = delete;
+    Engine& operator=(const Engine&& rhs) = delete;
 
     bool initialize();
     void cleanup();
@@ -28,13 +28,12 @@ public:
     void setScene(std::unique_ptr<Scene>&& scene);
     void shutdown();
 
-//	TransformSystem& transformSystem() { return _transformSystem; }
-//	SpriteSystem& spriteSystem() { return _spriteSystem; }
-//	RandomMovementSystem& randomMovementSystem() { return _randomMovementSystem; }
-    EntityManager& entityManager() { return _entityManager; };
+    // TransformSystem& transformSystem() { return _transformSystem; }
+    // SpriteSystem& spriteSystem() { return _spriteSystem; }
+    // RandomMovementSystem& randomMovementSystem() { return _randomMovementSystem; }
+    // EntityManager& entityManager() { return _entityManager; };
     TextureManager* textureManager() { return _textureManager.get(); }
     EventDispatcher* eventDispatcher() { return _eventDispatcher.get(); }
-
 
     void onQuit() override;
 
@@ -53,11 +52,11 @@ private:
     std::unique_ptr<TextureManager> _textureManager;
     std::unique_ptr<EventDispatcher> _eventDispatcher;
 
-    EntityManager _entityManager;
-//	TransformSystem _transformSystem;
-//	SpriteSystem _spriteSystem;
-//	RandomMovementSystem _randomMovementSystem;
+    // EntityManager _entityManager;
+    // TransformSystem _transformSystem;
+    // SpriteSystem _spriteSystem;
+    // RandomMovementSystem _randomMovementSystem;
 
     bool _isRunning = false;
-	SDL_UNUSED bool _padding[3];
+    SDL_UNUSED bool _padding[3];
 };

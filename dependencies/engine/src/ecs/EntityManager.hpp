@@ -1,32 +1,29 @@
-#pragma once
-
+#include "ecs/Entity.hpp"
 #include "container/Array.hpp"
+#include "memory/unique_ptr.hpp"
 
-struct Entity {
-	Uint32 m_id;
-    Uint32 m_generation;
-};
+namespace edgine {
+    class EntityManager {
+    public:
+        EntityManager() = default;
+        EntityManager(const EntityManager&) = delete;
+        EntityManager(const EntityManager&&) = delete;
+        EntityManager& operator=(const EntityManager&) = delete;
+        EntityManager& operator=(const EntityManager&&) = delete;
 
-class EntityManager {
-public:
-    EntityManager() = default;
-    EntityManager(const EntityManager& rhs) = delete;
-    EntityManager(const EntityManager&& rhs) = delete;
-    EntityManager& operator=(const EntityManager& rhs) = delete;
-    EntityManager& operator=(const EntityManager&& rhs) = delete;
+        void addEntity(edgine::unique_ptr<Entity>&& entity);
+        void destroyEntity(Entity* entity);
 
-    bool initWithCapacity(Uint32 capacity);
-    bool resize(Uint32 capacity);
-    Entity createEntity();
-    void destroyEntity(const Entity& handle);
-    bool isValid(const Entity& entity) const;
-
-private:
-    struct EntityData {
-        Uint32 m_nextIndex;
-        Uint32 m_generation;
+    private:
+        edgine::Array<edgine::unique_ptr<Entity>> m_entities;
     };
 
-    Array<EntityData> m_entityData;
-    Uint32 m_nextIndex = 0;
-};
+    template <typename T, typename = std::enable_if<std::is_base_of<Entity, T>::value>, class... U>
+    T& make_entity(EntityManager& entityManager, U&&... u) {
+        T* entity = new T(std::forward<U>(u)...);
+        entityManager.addEntity(unique_ptr<T>(entity));
+        return *entity;
+    }
+
+}  // namespace edgine
+

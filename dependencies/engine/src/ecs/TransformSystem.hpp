@@ -1,41 +1,46 @@
 #pragma once
 
-#include "math/Vector3f.hpp"
 #include "container/Array.hpp"
-
 #include "ecs/EntityManager.hpp"
+#include "ecs/ISystem.hpp"
+#include "ecs/IComponent.hpp"
+#include "math/Vector3f.hpp"
 
-#include <multi>
+namespace edgine {
 
-//  Depth
-//   [1] --> [A, B, C]
-//   [2] --> [A, B, B, B, C, C] 
-//   [3] --> [A, C, C, C]
+    struct TransformComponent final : public IComponent {
+        Vector3f m_localPosition;
+    };
 
-//   [            A             ]
-//   [A,    B,    C,      D     ]
-//   [A] [A B C] [] [A, B, C, D]
+    struct TransformHandle {
+        size_t index;
+    };
 
+    class TransformSystem final : public ISystem {
+    public:
+        TransformSystem();
+        TransformSystem(const TransformSystem& rhs) = delete;
+        TransformSystem(const TransformSystem&& rhs) = delete;
+        TransformSystem& operator=(const TransformSystem& rhs) = delete;
+        TransformSystem& operator=(const TransformSystem&& rhs) = delete;
 
-struct TransformComponent {
-    Vector3f m_localPosition;
-    Vector3f m_worldPosition;
-    Vector3f m_rotation;
-};
+        TransformHandle createComponent();
+        TransformComponent* getComponent(const TransformHandle& handle);
+        void destroyComponent(const TransformHandle& handle);
 
-struct SceneGraphComponent {
-    TransformComponent* parent;
-    Array<SceneGraphComponent> m_children;
-};
+        // ISystem
+        void update(float delta) override {}
 
-class TransformSystem {
-    TransformSystem() = default;
-    TransformSystem(const TransformSystem& rhs) = delete;
-    TransformSystem(const TransformSystem&& rhs) = delete;
-    TransformSystem& operator=(const TransformSystem& rhs) = delete;
-    TransformSystem& operator=(const TransformSystem&& rhs) = delete;
+    private:
+        union TransformData {
+            size_t nextHandle;
+            TransformComponent transformComponent;
+        };
 
-	TransformComponent getComponent(const Entity& entity);
+        Array<TransformComponent> m_components;
+        Array<size_t> m_componentHandles;
+        size_t m_nextHandle;
 
-	<Entity, TransformComponent>
-};
+    };
+
+}  // namespace edgine

@@ -25,7 +25,6 @@ endif()
 
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/stb")
-
 message(STATUS "")
 message(STATUS "=== Resources ===")
 if(NOT RESOURCES_DIR)
