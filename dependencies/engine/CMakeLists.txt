@@ -25,7 +25,7 @@ message (STATUS "CMAKE_CXX_FLAGS_RELEASE = ${CMAKE_CXX_FLAGS_RELEASE}")
 
 message(STATUS "")
 message(STATUS "=== SDL2 ===")
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/SDL2")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/sdl2")
 message(STATUS "") 
 message(STATUS "=== STB ===")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/stb")
