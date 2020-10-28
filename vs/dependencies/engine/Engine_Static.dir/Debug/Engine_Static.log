@@ -1,0 +1,14 @@
+﻿  Building Custom Rule C:/dev/proj/EngineTest/dependencies/engine/CMakeLists.txt
+  Engine.cpp
+  EventDispatcher.cpp
+  TextureManager.cpp
+  ObjectPool.cpp
+  String.cpp
+C:\dev\proj\EngineTest\dependencies\engine\src\core\String.cpp(68,41): warning C4267: 'initializing': conversion from 'size_t' to 'Uint32', possible loss of data
+  StringID.cpp
+  EntityManager.cpp
+  TransformSystem.cpp
+  FileManager.cpp
+  Matrix4f.cpp
+  Generating Code...
+  Engine_Static.vcxproj -> C:\dev\proj\EngineTest\vs\dependencies\engine\Debug\Engine_Static.lib

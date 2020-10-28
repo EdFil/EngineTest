@@ -1,0 +1,10 @@
+# CMake generation dependency list for this directory.
+C:/dev/CMake/share/cmake-3.17/Modules/CheckCSourceCompiles.cmake
+C:/dev/CMake/share/cmake-3.17/Modules/CheckIncludeFile.c.in
+C:/dev/CMake/share/cmake-3.17/Modules/CheckIncludeFile.cmake
+C:/dev/CMake/share/cmake-3.17/Modules/CheckLibraryExists.cmake
+C:/dev/CMake/share/cmake-3.17/Modules/FindPackageHandleStandardArgs.cmake
+C:/dev/CMake/share/cmake-3.17/Modules/FindPackageMessage.cmake
+C:/dev/CMake/share/cmake-3.17/Modules/FindThreads.cmake
+C:/dev/proj/EngineTest/dependencies/engine/cmake/FindSDL2.cmake
+C:/dev/proj/EngineTest/dependencies/engine/dependencies/sdl2/prebuilt/CMakeLists.txt

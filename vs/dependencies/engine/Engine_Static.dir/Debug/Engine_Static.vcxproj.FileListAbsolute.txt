@@ -1,0 +1,2 @@
+C:\dev\proj\EngineTest\vs\dependencies\engine\Debug\Engine_Static.pdb
+C:\dev\proj\EngineTest\vs\dependencies\engine\Engine_Static.dir\Debug\Engine_Static.pdb

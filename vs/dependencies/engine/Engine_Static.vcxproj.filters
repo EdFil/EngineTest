@@ -1,0 +1,123 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\dev\proj\EngineTest\dependencies\engine\src\Engine.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\dev\proj\EngineTest\dependencies\engine\src\EventDispatcher.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\dev\proj\EngineTest\dependencies\engine\src\TextureManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\dev\proj\EngineTest\dependencies\engine\src\container\ObjectPool.cpp">
+      <Filter>src\container</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\dev\proj\EngineTest\dependencies\engine\src\core\String.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\dev\proj\EngineTest\dependencies\engine\src\core\StringID.cpp">
+      <Filter>src\core</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\dev\proj\EngineTest\dependencies\engine\src\ecs\EntityManager.cpp">
+      <Filter>src\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\dev\proj\EngineTest\dependencies\engine\src\ecs\TransformSystem.cpp">
+      <Filter>src\ecs</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\dev\proj\EngineTest\dependencies\engine\src\file\FileManager.cpp">
+      <Filter>src\file</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\dev\proj\EngineTest\dependencies\engine\src\math\Matrix4f.cpp">
+      <Filter>src\math</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\Constants.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\Engine.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\EventDispatcher.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\Scene.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\TextureManager.hpp">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\container\Array.hpp">
+      <Filter>src\container</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\container\ObjectArray.hpp">
+      <Filter>src\container</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\container\ObjectPool.hpp">
+      <Filter>src\container</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\container\PODVector.hpp">
+      <Filter>src\container</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\container\SortableObjectPool.hpp">
+      <Filter>src\container</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\core\String.hpp">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\core\StringID.hpp">
+      <Filter>src\core</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\ecs\ECS.hpp">
+      <Filter>src\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\ecs\EntityManager.hpp">
+      <Filter>src\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\ecs\TransformSystem.hpp">
+      <Filter>src\ecs</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\file\FileManager.hpp">
+      <Filter>src\file</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\math\Matrix4f.hpp">
+      <Filter>src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\src\math\Vector3f.hpp">
+      <Filter>src\math</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\dev\proj\EngineTest\dependencies\engine\dependencies\stb\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\dev\proj\EngineTest\dependencies\engine\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="C:\dev\proj\EngineTest\dependencies\engine\Engine.natvis" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{4E112EB5-CFB9-3153-8747-F150D12AB1DF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{73C9ABB2-2C7C-396E-B2C3-4989CD848DF4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\container">
+      <UniqueIdentifier>{E238C286-A2C0-371B-9680-7F1F991BAA37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\core">
+      <UniqueIdentifier>{4EE88CB0-7F55-3D2F-92DB-192E512A0B1E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ecs">
+      <UniqueIdentifier>{EB78896E-C679-339F-B58C-E3F417C2975C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\file">
+      <UniqueIdentifier>{B9945D14-822A-355D-BDFD-014960E2B7D6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\math">
+      <UniqueIdentifier>{C70396A5-ACB0-3943-A2A8-FF40BA3D6E30}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

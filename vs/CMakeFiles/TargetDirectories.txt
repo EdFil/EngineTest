@@ -1,0 +1,6 @@
+C:/dev/proj/EngineTest/vs/CMakeFiles/EngineTest.dir
+C:/dev/proj/EngineTest/vs/CMakeFiles/ALL_BUILD.dir
+C:/dev/proj/EngineTest/vs/CMakeFiles/ZERO_CHECK.dir
+C:/dev/proj/EngineTest/vs/dependencies/engine/CMakeFiles/Engine_Static.dir
+C:/dev/proj/EngineTest/vs/dependencies/engine/CMakeFiles/ALL_BUILD.dir
+C:/dev/proj/EngineTest/vs/dependencies/engine/dependencies/stb/CMakeFiles/ALL_BUILD.dir

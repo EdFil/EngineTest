@@ -1,0 +1,10 @@
+^C:\DEV\PROJ\ENGINETEST\VS\CMAKEFILES\954EC377D9CA0C2A381FE58AD4AB429D\GENERATE.STAMP.RULE
+setlocal
+C:\dev\CMake\bin\cmake.exe -SC:/dev/proj/EngineTest -BC:/dev/proj/EngineTest/vs --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/dev/proj/EngineTest/vs/EngineTest.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

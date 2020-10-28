@@ -9,7 +9,7 @@
 #include "TextureManager.hpp"
 
 
-Engine::Engine() : _padding() {}// : _spriteSystem(*this), _randomMovementSystem(*this) {}
+Engine::Engine(int argc, char* argv[]) : _world(argc, argv) {}
 Engine::~Engine() {}
 
 bool Engine::initialize() {
@@ -40,11 +40,6 @@ bool Engine::initialize() {
 
 	_textureManager = std::make_unique<TextureManager>();
     _eventDispatcher = std::make_unique<EventDispatcher>();
-
-//  _entityManager.initWithCapacity(3);
-//	_transformSystem.initWithCapacity(10000);
-//	_spriteSystem.initWithCapacity(10000);
-//	_randomMovementSystem.initWithCapacity(10000);
 
     _eventDispatcher->initialize();
 

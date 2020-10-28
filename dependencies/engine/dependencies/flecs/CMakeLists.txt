@@ -1,0 +1,5 @@
+# if (${USE_PREBUILT_LIBRARIES})
+#     add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/prebuilt") 
+# else()
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/source")
+# endif()
