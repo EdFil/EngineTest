@@ -1,4 +1,4 @@
-#include <SDL_stdinc.h>
+#include <cstdint>
 
 #ifdef DEBUG
 #include "String.hpp"
@@ -36,12 +36,12 @@ inline constexpr uint32_t compile_time_hash() {
 class StringID {
 public:
 #ifdef DEBUG
-    StringID(Uint32 hashID, const char* const data);
+    StringID(uint32_t hashID, const char* const data);
 #else
-    StringID(Uint32 hashID);
+    StringID(uint32_t hashID);
 #endif
 
-    Uint32 id() const { return _hashID; }
+    uint32_t id() const { return _hashID; }
 #ifdef DEBUG
     const char* data() const { return _string.data(); }
 #endif
@@ -50,7 +50,7 @@ public:
     bool operator!=(const StringID& rhs) const;
 
 private:
-    Uint32 _hashID;
+    uint32_t _hashID;
 #ifdef DEBUG
     String _string;
 #endif

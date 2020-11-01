@@ -1,5 +1,5 @@
 mkdir build
 cd build
 cmake ../source
-cmake --build . --config Release
-cmake --install . --config Release --prefix install
+cmake --build . --config Debug
+cmake --install . --config Debug --prefix ../generated

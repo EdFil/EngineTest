@@ -3,108 +3,47 @@
 #include <cstdlib>
 #include <ctime>
 
-#include <SDL.h>
-
-#include "Scene.hpp"
+#include "SDL.h"
 #include "TextureManager.hpp"
 
-
-Engine::Engine(int argc, char* argv[]) : _world(argc, argv) {}
-Engine::~Engine() {}
-
-bool Engine::initialize() {
-#ifdef DEBUG
-	SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
-#endif
-
-	// Init SDL
-	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-		SDL_LogError(SDL_LOG_CATEGORY_SYSTEM, "SDL_Init Error: %s", SDL_GetError());
-		return false;
-	}
-
-	_window = SDL_CreateWindow("ConceptV2", 100, 100, 755, 600, SDL_WINDOW_SHOWN);
-	if (_window == nullptr) {
-		SDL_LogError(SDL_LOG_CATEGORY_SYSTEM, "SDL_CreateWindow Error: %s", SDL_GetError());
-		SDL_Quit();
-		return false;
-	}
-
-	_renderer = SDL_CreateRenderer(_window, -1, SDL_RENDERER_ACCELERATED);
-	if (_renderer == nullptr) {
-		SDL_DestroyWindow(_window);
-		SDL_LogError(SDL_LOG_CATEGORY_SYSTEM, "SDL_CreateRenderer Error: %s", SDL_GetError());
-		SDL_Quit();
-		return false;
-	}
-
-	_textureManager = std::make_unique<TextureManager>();
-    _eventDispatcher = std::make_unique<EventDispatcher>();
-
-    _eventDispatcher->initialize();
-
-	_textureManager->setRenderer(_renderer);
-    _eventDispatcher->registerForApplicationEvents(this);
-
-	return true;
+Engine::Engine(int argc, char* argv[]) : _windowManager(*this), _renderer(), _world(argc, argv) {
 }
 
-void Engine::cleanup() {
-    _eventDispatcher->unregisterForApplicationEvents(this);
+bool Engine::initialize() {
+    if (!_windowManager.initialize()) return false;
+    if (!_renderer.initialize(_windowManager.mainWindow())) return false;
 
-	if(_renderer)
-		SDL_DestroyRenderer(_renderer);
-	if(_window)
-		SDL_DestroyWindow(_window);
-	SDL_Quit();
+    return true;
 }
 
 void Engine::run() {
-	_isRunning = true;
-	_lastGetTicksTime = SDL_GetTicks();
-	mainLoop();
-}
-
-void Engine::setScene(std::unique_ptr<Scene>&& scene) {
-	if(_runningScene != nullptr) {
-		_runningScene->onDestroy();
-	}
-
-	_runningScene = std::move(scene);
-
-	if(_runningScene != nullptr) {
-		_runningScene->attachEngine(this);
-		_runningScene->onCreated();
-	}
+     _isRunning = true;
+    // _lastGetTicksTime = SDL_GetTicks();
+     mainLoop();
 }
 
 void Engine::mainLoop() {
+     while (_isRunning) {
+        
+         const unsigned currentTime = SDL_GetTicks();
+         float delta = static_cast<float>(currentTime - _lastGetTicksTime) / 1000.0f;
+         _lastGetTicksTime = currentTime;
 
-	while (_isRunning) {
-		const unsigned currentTime = SDL_GetTicks();
-		float delta = static_cast<float>(currentTime - _lastGetTicksTime) / 1000.0f;
-		_lastGetTicksTime = currentTime;
+         SDL_Event sdlEvent;
+         while (SDL_PollEvent(&sdlEvent) != 0) {
+             // User requests quit
+             if (sdlEvent.type == SDL_QUIT) {
+                 shutdown();
+             } else if (sdlEvent.type == SDL_WINDOWEVENT) {
+                 _windowManager.OnSDLEvent(sdlEvent.window);
+             }
 
-        _eventDispatcher->update();
+         }
+         
+         _renderer.render();
 
-		if (_runningScene) {
-		    _runningScene->update(delta);
-		}
-
-//		_randomMovementSystem.update(delta);
-
-		// Render Scene
-		SDL_SetRenderDrawColor(_renderer, 0, 0, 0, 255);
-		SDL_RenderClear(_renderer);
-
-//		_spriteSystem.tempDraw(_renderer);
-
-		SDL_RenderPresent(_renderer);
-	}
-}
-
-void Engine::onQuit() {
-    shutdown();
+         _windowManager.lateUpdate();
+     }
 }
 
 void Engine::shutdown() {

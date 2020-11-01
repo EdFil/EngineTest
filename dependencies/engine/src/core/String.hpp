@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SDL_stdinc.h>
+#include <cstdint>
 
 class String {
 public:
@@ -12,8 +12,8 @@ public:
 
     bool isEmpty() const { return m_length == 0; }
     const char* data() const { return m_pData; }
-    Uint32 length() const { return m_length; }
-    Uint32 capacity() const { return m_capacity; }
+    uint32_t length() const { return m_length; }
+    uint32_t capacity() const { return m_capacity; }
 
     bool operator==(const char* const rhs) const;
     bool operator==(const String& rhs) const;
@@ -24,9 +24,9 @@ public:
 
 private:
     char* m_pData = nullptr;
-    Uint32 m_length = 0;
-    Uint32 m_capacity = 0;
+    uint32_t m_length = 0;
+    uint32_t m_capacity = 0;
 
     bool init(const char* const data);
-    bool init(const char* const data, Uint32 length);
+    bool init(const char* const data, uint32_t length);
 };

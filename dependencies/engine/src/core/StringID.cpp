@@ -1,12 +1,10 @@
 #include "StringID.hpp"
 
-#include <SDL_assert.h>
-
 #ifdef DEBUG
-StringID::StringID(Uint32 hashID, const char* const data) : _hashID(hashID), _string(data) {
+StringID::StringID(uint32_t hashID, const char* const data) : _hashID(hashID), _string(data) {
 }
 #else
-StringID::StringID(Uint32 hashID) : _hashID(hashID) {
+StringID::StringID(uint32_t hashID) : _hashID(hashID) {
 }
 #endif
 
