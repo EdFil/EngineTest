@@ -7,6 +7,7 @@ message(STATUS "============== ${PROJECT_NAME} ==============")
 # Configure CMake
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+set(CMAKE_INSTALL_MESSAGE LAZY)
 
 # CXX Flags
 if(USE_COMPILE_TIME_STRING_ID)
@@ -17,11 +18,12 @@ message(STATUS "")
 message(STATUS "CMAKE_CXX_FLAGS = ${CMAKE_CXX_FLAGS}")
 message(STATUS "CMAKE_CXX_FLAGS_DEBUG = ${CMAKE_CXX_FLAGS_DEBUG}")
 message(STATUS "CMAKE_CXX_FLAGS_RELEASE = ${CMAKE_CXX_FLAGS_RELEASE}")
+message(STATUS "")
 
 # ============
 # Dependencies
 # ============
-
+include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/spdlog/Builder.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/sdl2/Builder.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/bgfx/Builder.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/stb/Builder.cmake")
@@ -54,7 +56,7 @@ add_library(Engine_Static STATIC ${SOURCES})
 target_include_directories(Engine_Static PUBLIC "${SOURCE_DIR}")
 
 # Link dependencies
-target_link_libraries(Engine_Static PUBLIC SDL2 SDL2main ${BGFX_LIBS} stb_static flecs)
+target_link_libraries(Engine_Static PUBLIC SDL2 SDL2main ${BGFX_LIBS} stb_static flecs spdlog::spdlog)
 
 # Source group generation for IDEs
 foreach(SOURCE IN ITEMS ${SOURCES})

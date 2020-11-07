@@ -1,7 +1,6 @@
 #include "renderer/Renderer.hpp"
 
-#include <cstdio>
-
+#include "spdlog/spdlog.h"
 #include "SDL_syswm.h"
 #include "bgfx/platform.h"
 #include "window/OSWindow.hpp"
@@ -11,12 +10,12 @@ Renderer::Renderer() : _window(nullptr) {
 
 bool Renderer::initialize(OSWindow* window) {
     if (window == nullptr) {
-        printf("[Renderer] Error: Invalid window, cannot initialize.");
+        spdlog::error("[Renderer] Invalid window, cannot initialize.");
         return false;
     }
 
     _window = window;
-    _window->Subscribe(*this);
+    _window->subscribe(*this);
     Size<int> size = _window->size();
     _width = size.width;
     _height = size.height;

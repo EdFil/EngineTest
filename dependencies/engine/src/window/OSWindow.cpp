@@ -1,10 +1,6 @@
 #include "OSWindow.hpp"
 
-#include <array>
-#include <cstdio>
-
-#include "EventQueue.hpp"
-#include "SDL.h"
+#include "spdlog/spdlog.h"
 #include "SDL_events.h"
 #include "SDL_video.h"
 
@@ -58,7 +54,7 @@ OSWindow::~OSWindow() {
 
 bool OSWindow::create(const OSWindowParams& params) {
     if (_sdlWindow != nullptr) {
-        printf("[OSWindow] Warning: Already initialized. Skipping...");
+        spdlog::warn("[OSWindow] Already initialized. Skipping...");
         return true;
     }
 
@@ -66,18 +62,18 @@ bool OSWindow::create(const OSWindowParams& params) {
     _sdlWindow = SDL_CreateWindow(params.name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, params.width,
                                   params.height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
     if (_sdlWindow == nullptr) {
-        printf("[SDL] Error: Could not create a SDL OSWindow. %s", SDL_GetError());
+        spdlog::error("[SDL] Could not create a SDL OSWindow. {}", SDL_GetError());
         return false;
     }
 
     return true;
 }
 
-void OSWindow::OnSDLEvent(const SDL_WindowEvent& event) {
+void OSWindow::onSDLEvent(const SDL_WindowEvent& event) {
     SDL_WindowEventID windowEventID = (SDL_WindowEventID)event.event;
-    printf("[OSWindow(%d)::onSDLEvent] %s\n", id(), stringifyWindowEventID(windowEventID));
+    spdlog::debug("[OSWindow({})::onSDLEvent] {}\n", id(), stringifyWindowEventID(windowEventID));
 
-    OSWindowEvent windowEvent{*this};
+    OSWindowEvent windowEvent{*this, {}};
     switch (windowEventID) {
         case SDL_WINDOWEVENT_CLOSE:
             _eventDispatcher.Signal(OSWindowEventType::CLOSE, windowEvent);
@@ -119,7 +115,7 @@ Size<int> OSWindow::size() const {
 
 void OSWindow::destroy() {
     if (_sdlWindow == nullptr) {
-        printf("[OSWindow] Warning: Trying to destroy OSWindow when it's not created");
+        spdlog::warn("[OSWindow] Trying to destroy OSWindow when it's not created");
         return;
     }
 
@@ -127,10 +123,10 @@ void OSWindow::destroy() {
     _sdlWindow = nullptr;
 }
 
-void OSWindow::Subscribe(OSWindowEventObserver& observer) {
+void OSWindow::subscribe(OSWindowEventObserver& observer) {
     _eventDispatcher.Subscribe(observer);
 }
 
-void OSWindow::Unsubscribe(OSWindowEventObserver& observer) {
+void OSWindow::unsubscribe(OSWindowEventObserver& observer) {
     _eventDispatcher.Unsubscribe(observer);
 }

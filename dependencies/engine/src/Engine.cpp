@@ -3,10 +3,12 @@
 #include <cstdlib>
 #include <ctime>
 
+#include "spdlog/cfg/argv.h"
 #include "SDL.h"
 #include "TextureManager.hpp"
 
 Engine::Engine(int argc, char* argv[]) : _windowManager(*this), _renderer(), _world(argc, argv) {
+    spdlog::cfg::load_argv_levels(argc, argv);
 }
 
 bool Engine::initialize() {
@@ -27,6 +29,7 @@ void Engine::mainLoop() {
         
          const unsigned currentTime = SDL_GetTicks();
          float delta = static_cast<float>(currentTime - _lastGetTicksTime) / 1000.0f;
+         (void)delta;
          _lastGetTicksTime = currentTime;
 
          SDL_Event sdlEvent;
@@ -35,7 +38,7 @@ void Engine::mainLoop() {
              if (sdlEvent.type == SDL_QUIT) {
                  shutdown();
              } else if (sdlEvent.type == SDL_WINDOWEVENT) {
-                 _windowManager.OnSDLEvent(sdlEvent.window);
+                 _windowManager.onSDLEvent(sdlEvent.window);
              }
 
          }

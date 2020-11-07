@@ -25,7 +25,6 @@ add_library(SDL2main STATIC IMPORTED GLOBAL)
 set_target_properties(SDL2main PROPERTIES IMPORTED_LOCATION "${SDL2main_LIB}")
 
 message(STATUS "Version: ${SDL2_VERSION}")
-message(STATUS "Libs: ${SDL2_LIBS} ${SDL2_RUNTIME_LIB}")
 message(STATUS "Include Dirs: ${SDL2_INCLUDE_DIR}")
 
 # Source group generation for IDEs

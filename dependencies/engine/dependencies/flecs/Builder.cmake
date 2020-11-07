@@ -5,3 +5,5 @@ else()
   message(STATUS "=== FLECS (Source) ===")
   add_subdirectory("${CMAKE_CURRENT_LIST_DIR}/source")
 endif()
+
+message(STATUS "")

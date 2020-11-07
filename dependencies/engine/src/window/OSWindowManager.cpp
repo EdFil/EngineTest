@@ -1,14 +1,10 @@
 #include "OSWindowManager.hpp"
 
-#include <cstdio>
 #include <cstring>
 
-#include "Engine.hpp"
+#include "spdlog/spdlog.h"
 #include "SDL.h"
-
-namespace {
-    std::unique_ptr<OSWindow> k_nullWindow;
-}
+#include "Engine.hpp"
 
 OSWindowManager::OSWindowManager(Engine& engine) : _engine(engine), _windows{nullptr} {
 }
@@ -19,12 +15,13 @@ bool OSWindowManager::initialize() {
 #endif
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        printf("[SDL] Could not initialize! SDL_Error: %s\n", SDL_GetError());
+        spdlog::error("[SDL] Could not initialize! SDL_Error: {}", SDL_GetError());
         return false;
     }
 
     OSWindow* window = createWindow(OSWindowParams{});
     if (window == nullptr) {
+        spdlog::error("[OSWindowManager] Could not create main window");
         return false;
     }
 
@@ -38,7 +35,7 @@ OSWindow* OSWindowManager::createWindow(const OSWindowParams& params) {
     }
 
     if (i >= k_maxWindowCount) {
-        printf("[OSWindowManager] Error: Already reached the max number of instanced windows (%d)", k_maxWindowCount);
+        spdlog::error("[OSWindowManager] Error: Already reached the max number of instanced windows ({})", k_maxWindowCount);
         return nullptr;
     }
 
@@ -48,7 +45,7 @@ OSWindow* OSWindowManager::createWindow(const OSWindowParams& params) {
         return nullptr;
     }
 
-    _windows[i].reset(window);
+    _windows[i] = window;
     return window;
 }
 
@@ -69,42 +66,48 @@ void OSWindowManager::destroy() {
     SDL_Quit();
 }
 
-void OSWindowManager::OnSDLEvent(const SDL_WindowEvent& event) {
-    std::unique_ptr<OSWindow>& windowSlot = windowSlotWithID(event.windowID);
-    if (!windowSlot) {
-        printf("[OSWindowManager::OnSDLEvent] Warning: Event window ID did not match any of the windows we have.");
-    }
-
-    windowSlot->OnSDLEvent(event);
-}
-
-void OSWindowManager::onWindowClosedEvent(const OSWindowEvent& event) {
-    std::unique_ptr<OSWindow>& window = windowSlotWithID(event.window.id());
-    if (!window) {
-        printf("[OSWindowManager::OnSDLEvent] Warning: Event window ID did not match any of the windows we have.");
+void OSWindowManager::onSDLEvent(const SDL_WindowEvent& event) {
+    OSWindow* windowSlot = windowSlotWithID(event.windowID);
+    if (windowSlot == nullptr) {
+        spdlog::warn("[OSWindowManager::onSDLEvent] Event window ID did not match any of the windows we have.");
         return;
     }
 
-    if (window.get() == mainWindow()) {
+    windowSlot->onSDLEvent(event);
+}
+
+void OSWindowManager::onWindowClosedEvent(const OSWindowEvent& event) {
+    OSWindow* window = windowSlotWithID(event.window.id());
+    if (window == nullptr) {
+        spdlog::warn("[OSWindowManager::onSDLEvent] Event window ID did not match any of the windows we have.");
+        return;
+    }
+
+    if (window == mainWindow()) {
         _engine.shutdown();
     } else {
         destroyWindow(window);
     }
 }
 
-std::unique_ptr<OSWindow>& OSWindowManager::windowSlotWithID(uint32_t id) {
+OSWindow* OSWindowManager::windowSlotWithID(uint32_t id) {
     for (size_t i = 0; i < k_maxWindowCount; i++) {
         if (_windows[i] && _windows[i]->id() == id) {
             return _windows[i];
         }
     }
 
-    return k_nullWindow;
+    return nullptr;
 }
 
-void OSWindowManager::destroyWindow(std::unique_ptr<OSWindow>& window) {
-    if (!window) return;
+void OSWindowManager::destroyWindow(OSWindow* window) {
+    size_t i = 0;
+    for (; i < k_maxWindowCount; i++) {
+        if (_windows[i] == window) break;
+    }
 
-    window->destroy();
-    window.reset();
+    if (i < k_maxWindowCount && _windows[i] != nullptr) {
+        delete _windows[i];
+        _windows[i] = nullptr;
+    }
 }

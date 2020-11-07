@@ -11,14 +11,3 @@ struct OSWindowParams {
     const uint32_t width = 640;
     const uint32_t height = 480;
 };
-
-enum class OSWindowEventType { CLOSE, RESIZE };
-
-union OSWindowEventData {
-    Size<int> size;
-};
-
-struct OSWindowEvent {
-    OSWindow& window;
-    OSWindowEventData data;
-};

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include "OSWindow.hpp"
 #include "EventQueue.hpp"
 #include "window/Utils.hpp"
@@ -12,23 +10,23 @@ struct SDL_WindowEvent;
 
 class OSWindowManager : private OSWindowEventObserver {
 public:
-    OSWindowManager(Engine& engine);
+    explicit OSWindowManager(Engine& engine);
 
     bool initialize();
-    void OnSDLEvent(const SDL_WindowEvent& event);
+    void onSDLEvent(const SDL_WindowEvent& event);
 
     OSWindow* createWindow(const OSWindowParams& params);
-    OSWindow* mainWindow() const { return _windows[0].get(); }
+    OSWindow* mainWindow() const { return _windows[0]; }
 
 
 private:
     Engine& _engine;
-    std::unique_ptr<OSWindow> _windows[k_maxWindowCount];
+    OSWindow* _windows[k_maxWindowCount];
 
     void destroy();
     void onWindowClosedEvent(const OSWindowEvent& event);
-    std::unique_ptr<OSWindow>& windowSlotWithID(uint32_t id);
-    void destroyWindow(std::unique_ptr<OSWindow>& window);
+    OSWindow* windowSlotWithID(uint32_t id);
+    void destroyWindow(OSWindow* window);
 
-    void onEventCalled(const OSWindowEventType& type, const OSWindowEvent& data);
+    void onEventCalled(const OSWindowEventType& type, const OSWindowEvent& data) final;
 };
