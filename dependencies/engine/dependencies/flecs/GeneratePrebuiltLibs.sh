@@ -1,5 +1,4 @@
 mkdir build
 cd build
-cmake ../source
-cmake --build . --config Debug
-cmake --install . --config Debug --prefix ../generated
+cmake ../source -DCMAKE_INSTALL_PREFIX:PATH=../generated
+cmake --build . --target install --config Debug

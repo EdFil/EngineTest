@@ -1,20 +1,20 @@
 #pragma once
 
-#include "window/Window.hpp"
+#include "window/OSWindow.hpp"
 
-class Renderer : private WindowEventObserver {
+class Renderer : private OSWindowEventObserver {
 public:
     Renderer();
 
-    bool initialize(Window* _window);
+    bool initialize(OSWindow* _window);
     void destroy();
     void render();
 
-    void onEventCalled(const WindowEventType& type, const WindowEvent& event) override;
+    void onEventCalled(const OSWindowEventType& type, const OSWindowEvent& event) override;
 
 private:
     bool _isInitialized = false;
-    Window* _window;
+    OSWindow* _window;
     unsigned int _width;
     unsigned int _height;
 

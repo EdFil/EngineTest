@@ -1,5 +1,7 @@
 if(WIN32)
   set(BGFX_DIR "${CMAKE_CURRENT_LIST_DIR}/windows")
+elseif (UNIX AND NOT APPLE)
+  set(BGFX_DIR "${CMAKE_CURRENT_LIST_DIR}/linux")
 else()
   message(FATAL_ERROR "NOT IMPLEMENTED")
 endif()

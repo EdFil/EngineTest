@@ -5,7 +5,7 @@
 
 #include <flecs.h>
 
-#include "window/WindowManager.hpp"
+#include "window/OSWindowManager.hpp"
 #include "renderer/Renderer.hpp"
 #include "EventQueue.hpp"
 
@@ -29,7 +29,7 @@ private:
     void mainLoop();
 
 private:
-    WindowManager _windowManager;
+    OSWindowManager _windowManager;
     Renderer _renderer;
 
     unsigned _lastGetTicksTime = 0;
