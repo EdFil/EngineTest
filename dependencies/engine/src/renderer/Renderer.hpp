@@ -1,8 +1,8 @@
 #pragma once
 
-class Window;
+#include "window/Window.hpp"
 
-class Renderer {
+class Renderer : private WindowEventObserver {
 public:
     Renderer();
 
@@ -10,9 +10,12 @@ public:
     void destroy();
     void render();
 
+    void onEventCalled(const WindowEventType& type, const WindowEvent& event) override;
+
 private:
     bool _isInitialized = false;
     Window* _window;
     unsigned int _width;
     unsigned int _height;
+
 };

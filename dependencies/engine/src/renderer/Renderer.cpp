@@ -16,6 +16,7 @@ bool Renderer::initialize(Window* window) {
     }
 
     _window = window;
+    _window->Subscribe(*this);
     Size<int> size = _window->size();
     _width = size.width;
     _height = size.height;
@@ -94,4 +95,18 @@ void Renderer::render() {
     // Advance to next frame. Rendering thread will be kicked to
     // process submitted rendering primitives.
     bgfx::frame();
+}
+
+void Renderer::onEventCalled(const WindowEventType& type, const WindowEvent& event) {
+    switch (type) {
+        case WindowEventType::RESIZE:
+            _width = event.data.size.width;
+            _height = event.data.size.height;
+            bgfx::reset(_width, _height, BGFX_RESET_VSYNC);
+            //bgfx::setViewRect(0, 0, 0, uint16_t(_width), uint16_t(_height));
+            bgfx::touch(0);
+            break;
+        default:
+            break;
+    }
 }

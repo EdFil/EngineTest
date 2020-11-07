@@ -1,29 +1,26 @@
 #pragma once
 
 #include <vector>
+#include <algorithm>
 
-template <typename T>
+template <typename Type, typename Data>
 class EventDispatcher {
 public:
-    void queueEvent(const T& event);
-    bool popEvent(T& event);
+    class Observer {
+    public:
+        virtual void onEventCalled(const Type& type, const Data& data) = 0;
+    };
+
+public:
+    void Subscribe(Observer& observer) { _observers.push_back(&observer); }
+    void Unsubscribe(Observer& observer) { _observers.erase(std::remove(_observers.begin(), _observers.end(), &observer)); }
+
+    void Signal(const Type& type, const Data& data) {
+        for (Observer* observer : _observers) {
+            observer->onEventCalled(type, data);
+        }
+    }
 
 private:
-    std::vector<T> _queuedEvents;
+    std::vector<Observer*> _observers;
 };
-
-// -----------------
-
-template <typename T>
-void EventDispatcher<T>::queueEvent(const T& event) {
-    _queuedEvents.push_back(event);
-}
-
-template <typename T>
-bool EventDispatcher<T>::popEvent(T& event) {
-    if (_queuedEvents.empty()) return false;
-
-    event = _queuedEvents.back();
-    _queuedEvents.pop_back();
-    return true;
-}

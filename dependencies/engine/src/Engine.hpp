@@ -7,7 +7,7 @@
 
 #include "window/WindowManager.hpp"
 #include "renderer/Renderer.hpp"
-#include "EventDispatcher.hpp"
+#include "EventQueue.hpp"
 
 struct SDL_Window;
 struct SDL_Renderer;

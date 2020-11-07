@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cstdint>
+#include "utils/Size.hpp"
 
+class Window;
 static const unsigned short k_maxWindowCount = 8;
 
 struct WindowParams {
@@ -10,12 +12,15 @@ struct WindowParams {
     const uint32_t height = 480;
 };
 
-enum class WindowEventType { 
-    CLOSE 
+enum class WindowEventType { CLOSE, RESIZE };
+
+union WindowEventData {
+    Size<int> size;
 };
 
 struct WindowEvent {
-    uint32_t windowID;
-    WindowEventType eventType;
-};
+    WindowEvent() = default;
 
+    Window& window;
+    WindowEventData data;
+};

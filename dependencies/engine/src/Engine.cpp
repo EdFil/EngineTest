@@ -41,8 +41,6 @@ void Engine::mainLoop() {
          }
          
          _renderer.render();
-
-         _windowManager.lateUpdate();
      }
 }
 

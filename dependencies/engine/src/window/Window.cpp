@@ -3,7 +3,7 @@
 #include <array>
 #include <cstdio>
 
-#include "EventDispatcher.hpp"
+#include "EventQueue.hpp"
 #include "SDL_events.h"
 #include "SDL_video.h"
 
@@ -48,7 +48,7 @@ const char* stringifyWindowEventID(SDL_WindowEventID eventID) {
     }
 }
 
-Window::Window(EventDispatcher<WindowEvent>& eventDispatcher) : _eventDispatcher(eventDispatcher), _sdlWindow(nullptr) {
+Window::Window() : _sdlWindow(nullptr) {
 }
 
 Window::~Window() {
@@ -76,13 +76,16 @@ void Window::OnSDLEvent(const SDL_WindowEvent& event) {
     SDL_WindowEventID windowEventID = (SDL_WindowEventID)event.event;
     printf("[Window(%d)::onSDLEvent] %s\n", id(), stringifyWindowEventID(windowEventID));
 
+    WindowEvent windowEvent{*this};
     switch (windowEventID) {
         case SDL_WINDOWEVENT_CLOSE:
-            _eventDispatcher.queueEvent({id(), WindowEventType::CLOSE});
+            _eventDispatcher.Signal(WindowEventType::CLOSE, windowEvent);
             break;
 
         case SDL_WINDOWEVENT_RESIZED:
-
+            windowEvent.data.size = {event.data1, event.data2};
+            _eventDispatcher.Signal(WindowEventType::RESIZE, windowEvent);
+            break;
 
         case SDL_WINDOWEVENT_NONE:
         case SDL_WINDOWEVENT_SHOWN:
@@ -121,4 +124,12 @@ void Window::destroy() {
 
     SDL_DestroyWindow(_sdlWindow);
     _sdlWindow = nullptr;
+}
+
+void Window::Subscribe(WindowEventObserver& observer) {
+    _eventDispatcher.Subscribe(observer);
+}
+
+void Window::Unsubscribe(WindowEventObserver& observer) {
+    _eventDispatcher.Unsubscribe(observer);
 }

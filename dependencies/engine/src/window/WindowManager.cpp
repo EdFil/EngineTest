@@ -42,7 +42,7 @@ Window* WindowManager::createWindow(const WindowParams& params) {
         return nullptr;
     }
 
-    Window* window = new Window(_delayedEventsQueue);
+    Window* window = new Window();
     if (!window->create(params)) {
         delete window;
         return nullptr;
@@ -52,16 +52,12 @@ Window* WindowManager::createWindow(const WindowParams& params) {
     return window;
 }
 
-void WindowManager::lateUpdate() {
-    WindowEvent event;
-    while (_delayedEventsQueue.popEvent(event)) {
-        switch (event.eventType) {
-            case WindowEventType::CLOSE:
-                onWindowCloseEvent(event);
-                break;
-            default:
-                break;
-        }
+void WindowManager::onEventCalled(const WindowEventType& type, const WindowEvent& data) {
+    switch (type) {
+        case WindowEventType::CLOSE:
+            onWindowClosedEvent(data);
+        default:
+            break;
     }
 }
 
@@ -82,8 +78,8 @@ void WindowManager::OnSDLEvent(const SDL_WindowEvent& event) {
     windowSlot->OnSDLEvent(event);
 }
 
-void WindowManager::onWindowCloseEvent(const WindowEvent& event) {
-    std::unique_ptr<Window>& window = windowSlotWithID(event.windowID);
+void WindowManager::onWindowClosedEvent(const WindowEvent& event) {
+    std::unique_ptr<Window>& window = windowSlotWithID(event.window.id());
     if (!window) {
         printf("[WindowManager::OnSDLEvent] Warning: Event window ID did not match any of the windows we have.");
         return;
