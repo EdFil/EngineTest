@@ -1,8 +1,8 @@
 #include "renderer/Renderer.hpp"
 
-#include "spdlog/spdlog.h"
 #include "SDL_syswm.h"
 #include "bgfx/platform.h"
+#include "spdlog/spdlog.h"
 #include "window/OSWindow.hpp"
 
 Renderer::Renderer() : _window(nullptr) {

@@ -56,7 +56,7 @@ add_library(Engine_Static STATIC ${SOURCES})
 target_include_directories(Engine_Static PUBLIC "${SOURCE_DIR}")
 
 # Link dependencies
-target_link_libraries(Engine_Static PUBLIC SDL2 SDL2main ${BGFX_LIBS} stb_static flecs spdlog::spdlog)
+target_link_libraries(Engine_Static PUBLIC SDL2 SDL2main ${BGFX_LIBS} stb_static flecs spdlog)
 
 # Source group generation for IDEs
 foreach(SOURCE IN ITEMS ${SOURCES})
