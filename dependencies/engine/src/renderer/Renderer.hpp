@@ -5,6 +5,7 @@
 class Renderer : private OSWindowEventObserver {
 public:
     Renderer();
+    ~Renderer();
 
     bool initialize(OSWindow* _window);
     void destroy();

@@ -24,6 +24,7 @@ message(STATUS "")
 # Dependencies
 # ============
 include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/spdlog/Builder.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/glm/Builder.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/sdl2/Builder.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/bgfx/Builder.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/stb/Builder.cmake")
@@ -56,7 +57,7 @@ add_library(Engine_Static STATIC ${SOURCES})
 target_include_directories(Engine_Static PUBLIC "${SOURCE_DIR}")
 
 # Link dependencies
-target_link_libraries(Engine_Static PUBLIC SDL2 SDL2main ${BGFX_LIBS} stb_static flecs spdlog)
+target_link_libraries(Engine_Static PUBLIC SDL2 SDL2main ${BGFX_LIBS} stb_static flecs spdlog glm)
 
 # Source group generation for IDEs
 foreach(SOURCE IN ITEMS ${SOURCES})

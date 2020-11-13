@@ -8,6 +8,10 @@
 Renderer::Renderer() : _window(nullptr) {
 }
 
+Renderer::~Renderer() {
+    destroy();
+}
+
 bool Renderer::initialize(OSWindow* window) {
     if (window == nullptr) {
         spdlog::error("[Renderer] Invalid window, cannot initialize.");
@@ -39,7 +43,6 @@ bool Renderer::initialize(OSWindow* window) {
     pd.ndt = wmi.info.vivante.display;
     pd.nwh = wmi.info.vivante.window;
 #endif  // BX_PLATFORM_
-    // bgfx::setPlatformData(pd);
 
     // Init bgfx
     bgfx::Init init;
@@ -63,6 +66,7 @@ bool Renderer::initialize(OSWindow* window) {
 
 void Renderer::destroy() {
     if (_isInitialized) {
+        _window->unsubscribe(*this);
         bgfx::shutdown();
         _isInitialized = false;
     }
