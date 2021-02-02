@@ -60,7 +60,7 @@ bool OSWindow::create(const OSWindowParams& params) {
 
     // Create OSWindow
     _sdlWindow = SDL_CreateWindow(params.name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, params.width,
-                                  params.height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+                                  params.height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
     if (_sdlWindow == nullptr) {
         spdlog::error("[SDL] Could not create a SDL OSWindow. {}", SDL_GetError());
         return false;

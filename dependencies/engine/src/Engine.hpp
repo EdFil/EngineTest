@@ -3,15 +3,9 @@
 #include <memory>
 #include <vector>
 
-#include <flecs.h>
-
-#include "window/OSWindowManager.hpp"
-#include "renderer/Renderer.hpp"
 #include "EventQueue.hpp"
-
-struct SDL_Window;
-struct SDL_Renderer;
-class Scene;
+#include "window/OSWindowManager.hpp"
+#include "rendering/Renderer.hpp"
 
 class Engine {
 public:
@@ -33,7 +27,6 @@ private:
     Renderer _renderer;
 
     unsigned _lastGetTicksTime = 0;
-    flecs::world _world;
 
     bool _isRunning = false;
 };

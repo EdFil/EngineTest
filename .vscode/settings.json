@@ -76,7 +76,9 @@
         "iomanip": "cpp",
         "thread": "cpp",
         "queue": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "xstring": "cpp",
+        "xiosbase": "cpp"
     },
     "cmake.configureOnOpen": true,
     "C_Cpp.dimInactiveRegions": true

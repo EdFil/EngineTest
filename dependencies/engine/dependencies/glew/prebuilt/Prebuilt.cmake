@@ -1,0 +1,17 @@
+if(WIN32)
+    list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/windows")
+else()
+  message(FATAL_ERROR "NOT IMPLEMENTED")
+endif()
+
+find_package(OpenGL REQUIRED)
+find_package(GLEW REQUIRED)
+
+target_link_libraries(GLEW::GLEW
+  INTERFACE ${OPENGL_LIBRARIES}
+)
+
+list(APPEND GLEW_LIBRARIES ${OPENGL_LIBRARIES})
+
+message(STATUS "Version: ${GLEW_VERSION}")
+message(STATUS "${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
