@@ -6,9 +6,9 @@ message(STATUS "============== ${PROJECT_NAME} ==============")
 
 # Configure CMake
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 set(CMAKE_INSTALL_MESSAGE LAZY)
 set(CMAKE_LIBRARY_ARCHITECTURE ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID})
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # CXX Flags
 if(USE_COMPILE_TIME_STRING_ID)
@@ -58,7 +58,7 @@ add_library(Engine_Static STATIC ${SOURCES})
 target_include_directories(Engine_Static PUBLIC "${SOURCE_DIR}" )
 
 # Link dependencies
-target_link_libraries(Engine_Static PUBLIC GLEW::GLEW SDL2 SDL2main ${BGFX_LIBS} stb_static flecs spdlog glm)
+target_link_libraries(Engine_Static PUBLIC GLEW::GLEW SDL2::Core SDL2::Main ${BGFX_LIBS} stb_static flecs spdlog glm)
 
 # Source group generation for IDEs
 foreach(SOURCE IN ITEMS ${SOURCES})

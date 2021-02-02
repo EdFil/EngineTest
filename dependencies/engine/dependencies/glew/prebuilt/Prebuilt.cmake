@@ -1,9 +1,10 @@
 if(WIN32)
     list(APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/windows")
-else()
-  message(FATAL_ERROR "NOT IMPLEMENTED")
+# else()
+#   message(FATAL_ERROR "NOT IMPLEMENTED")
 endif()
 
+set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
