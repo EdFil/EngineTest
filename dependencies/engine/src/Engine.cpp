@@ -17,8 +17,6 @@ bool Engine::initialize() {
     if (!_windowManager.initialize()) return false;
     if (!_renderer.init(_windowManager.mainWindow()->sdlWindow())) return false;
 
-    SDL_GL_SetSwapInterval(1);
-
     return true;
 }
 
@@ -44,12 +42,6 @@ void Engine::mainLoop() {
                 _windowManager.onSDLEvent(sdlEvent.window);
             }
         }
-
-
-        
-        glViewport(0, 0, 100, 100);
-        glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
     }
 }
 

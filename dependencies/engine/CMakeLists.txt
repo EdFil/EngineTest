@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_INSTALL_MESSAGE LAZY)
 set(CMAKE_LIBRARY_ARCHITECTURE ${CMAKE_CXX_COMPILER_ARCHITECTURE_ID})
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+set(ENGINE_CMAKE_FOLDER ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # CXX Flags
 if(USE_COMPILE_TIME_STRING_ID)
@@ -24,10 +25,10 @@ message(STATUS "")
 # ============
 # Dependencies
 # ============
+include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/sdl2/Builder.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/spdlog/Builder.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/glm/Builder.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/glew/Builder.cmake")
-include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/sdl2/Builder.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/stb/Builder.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/flecs/Builder.cmake")
 message(STATUS "")

@@ -6,13 +6,20 @@ endif()
 
 set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL REQUIRED)
+
+set (GLEW_USE_STATIC_LIBS TRUE)
 find_package(GLEW REQUIRED)
 
-target_link_libraries(GLEW::GLEW
+target_link_libraries(GLEW::GLEW 
   INTERFACE ${OPENGL_LIBRARIES}
+)
+
+target_compile_definitions(GLEW::GLEW 
+  INTERFACE GLEW_STATIC
 )
 
 list(APPEND GLEW_LIBRARIES ${OPENGL_LIBRARIES})
 
 message(STATUS "Version: ${GLEW_VERSION}")
-message(STATUS "${CMAKE_CXX_COMPILER_ARCHITECTURE_ID}")
+message(STATUS "Includes: ${GLEW_INCLUDE_DIRS}")
+message(STATUS "Libraries: ${GLEW_LIBRARIES}")
