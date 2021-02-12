@@ -6,6 +6,7 @@
 #include "rendering/OpenGL/ShaderManagerGL.hpp"
 
 struct SDL_Window;
+struct SDL_Renderer;
 typedef void* SDL_GLContext;
 class String;
 
@@ -15,12 +16,15 @@ public:
     ~RenderingDeviceGL();
 
     bool init() override;
+    void preRender() override;
+    void postRender() override;
 
     RenderingDeviceInfo* deviceInfo() override { return &_renderingDeviceInfo; }
     ShaderManager* shaderManager() override { return &_shaderManager; }
 
 private:
     SDL_Window* _window;
+    SDL_Renderer* _renderer;
     SDL_GLContext _context;
     RenderingDeviceInfoGL _renderingDeviceInfo;
     ShaderManagerGL _shaderManager;

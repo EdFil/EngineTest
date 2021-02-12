@@ -1,6 +1,6 @@
 #include "rendering/OpenGL/RenderingDeviceInfoGL.hpp"
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 
 #include "rendering/Types.hpp"
 

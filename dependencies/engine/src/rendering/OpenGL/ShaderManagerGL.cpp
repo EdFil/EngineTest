@@ -1,7 +1,5 @@
 #include "rendering/OpenGL/ShaderManagerGL.hpp"
 
-#include <GL/glew.h>
-
 #include "rendering/OpenGL/ShaderGL.hpp"
 
 ShaderManagerGL::~ShaderManagerGL() {

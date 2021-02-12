@@ -3,10 +3,9 @@
 #include <cstdlib>
 #include <ctime>
 
-#include <GL/glew.h>
-
 #include "SDL.h"
 #include "TextureManager.hpp"
+#include "rendering/RenderingDevice.hpp"
 #include "spdlog/cfg/argv.h"
 
 Engine::Engine(int argc, char* argv[]) : _windowManager(*this) {
@@ -42,6 +41,9 @@ void Engine::mainLoop() {
                 _windowManager.onSDLEvent(sdlEvent.window);
             }
         }
+
+        _renderer.renderingDevice()->preRender();
+        _renderer.renderingDevice()->postRender();
     }
 }
 

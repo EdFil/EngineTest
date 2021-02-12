@@ -1,5 +1,5 @@
 
-#include <GL/glew.h>
+#include <glad/glad.h>
 #include <SDL_opengl.h>
 #include <spdlog/spdlog.h>
 
