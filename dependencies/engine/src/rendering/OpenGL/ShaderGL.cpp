@@ -1,7 +1,8 @@
 
 #include <glad/glad.h>
 #include <SDL_opengl.h>
-#include <spdlog/spdlog.h>
+#include <SDL_stdinc.h>
+#include "logger/Logger.hpp"
 
 #include "rendering/OpenGL/ShaderGL.hpp"
 
@@ -13,7 +14,7 @@ GLenum convertShaderType(Shader::Type type) {
         case Shader::Type::Fragment:
             return GL_FRAGMENT_SHADER;
         default:
-            SPDLOG_ERROR("Unsuported shader type {}", type);
+            LOG_ERROR("Unsuported shader type %s", type);
             return GL_INVALID_ENUM;
     }
 }
@@ -43,7 +44,7 @@ void ShaderGL::compileShader() {
     GLint status = 0;
     glGetShaderiv(_id, GL_COMPILE_STATUS, &status);
     if (!status) {
-        SPDLOG_ERROR("Failed to compile shader:\n {}", _source.data());
+        LOG_ERROR("Failed to compile shader:\n %s", _source.data());
         printGLError();
         deleteShader();
     }
@@ -59,8 +60,9 @@ void ShaderGL::deleteShader() {
 void ShaderGL::printGLError() const {
     GLint logLength = 0;
     glGetShaderiv(_id, GL_INFO_LOG_LENGTH, &logLength);
-
-    char* log = (char*)alloca(sizeof(char) * logLength);
+    
+    char* log = SDL_stack_alloc(char, logLength);
     glGetShaderInfoLog(_id, logLength, nullptr, log);
-    SPDLOG_ERROR("{}", log);
+    LOG_ERROR("%s", log);
+    SDL_stack_free(log);
 }

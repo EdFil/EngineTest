@@ -1,27 +1,23 @@
 #include "OSWindowManager.hpp"
 
 #include <cstring>
+#include <SDL.h>
 
-#include "spdlog/spdlog.h"
-#include "SDL.h"
+#include "logger/Logger.hpp"
 #include "Engine.hpp"
 
 OSWindowManager::OSWindowManager(Engine& engine) : _engine(engine), _windows{nullptr} {
 }
 
 bool OSWindowManager::initialize() {
-#ifdef DEBUG
-    SDL_LogSetAllPriority(SDL_LogPriority::SDL_LOG_PRIORITY_DEBUG);
-#endif
-
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        spdlog::error("[SDL] Could not initialize! SDL_Error: {}", SDL_GetError());
+        LOG_ERROR("[OSWindowManager] Could not initialize! SDL_Error: %s", SDL_GetError());
         return false;
     }
 
     OSWindow* window = createWindow(OSWindowParams{});
     if (window == nullptr) {
-        spdlog::error("[OSWindowManager] Could not create main window");
+        LOG_ERROR("[OSWindowManager] Could not create main window");
         return false;
     }
 
@@ -35,7 +31,8 @@ OSWindow* OSWindowManager::createWindow(const OSWindowParams& params) {
     }
 
     if (i >= k_maxWindowCount) {
-        spdlog::error("[OSWindowManager] Error: Already reached the max number of instanced windows ({})", k_maxWindowCount);
+        LOG_ERROR("[OSWindowManager] Error: Already reached the max number of instanced windows (%d)",
+                  k_maxWindowCount);
         return nullptr;
     }
 
@@ -69,7 +66,7 @@ void OSWindowManager::destroy() {
 void OSWindowManager::onSDLEvent(const SDL_WindowEvent& event) {
     OSWindow* windowSlot = windowSlotWithID(event.windowID);
     if (windowSlot == nullptr) {
-        spdlog::warn("[OSWindowManager::onSDLEvent] Event window ID did not match any of the windows we have.");
+        LOG_ERROR("[OSWindowManager::onSDLEvent] Event window ID did not match any of the windows we have.");
         return;
     }
 
@@ -79,7 +76,7 @@ void OSWindowManager::onSDLEvent(const SDL_WindowEvent& event) {
 void OSWindowManager::onWindowClosedEvent(const OSWindowEvent& event) {
     OSWindow* window = windowSlotWithID(event.window.id());
     if (window == nullptr) {
-        spdlog::warn("[OSWindowManager::onSDLEvent] Event window ID did not match any of the windows we have.");
+        LOG_ERROR("[OSWindowManager::onSDLEvent] Event window ID did not match any of the windows we have.");
         return;
     }
 

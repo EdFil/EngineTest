@@ -2,8 +2,8 @@
 
 #include <SDL_render.h>
 #include <glad/glad.h>
-#include <spdlog/spdlog.h>
 
+#include "logger/Logger.hpp"
 #include "rendering/OpenGL/ProgramGL.hpp"
 #include "rendering/OpenGL/RenderingDeviceInfoGL.hpp"
 #include "rendering/OpenGL/ShaderGL.hpp"
@@ -23,10 +23,10 @@ bool RenderingDeviceGL::init() {
     }
 
     if (!gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress)) {
-        SPDLOG_ERROR("[RenderingDeviceGL] Could not initialize GLAD");
+        LOG_ERROR("[RenderingDeviceGL] Could not initialize GLAD");
         return false;
     } else {
-        SPDLOG_INFO("[RenderingDeviceGL] OpenGL version {}.{}", GLVersion.major, GLVersion.minor);
+        LOG("[RenderingDeviceGL] OpenGL version %d.%d", GLVersion.major, GLVersion.minor);
     }
 
     bool wasSuccess = true;
@@ -53,9 +53,9 @@ void RenderingDeviceGL::preRender() {
     static float b = 0;
     static float bDir = 1.0f;
 
-    r += rand() % 20 == 0 ? 0.01f * rDir : 0.0f;
-    g += rand() % 20 == 0 ? 0.01f * gDir : -0.05f;
-    b += rand() % 20 == 0 ? 0.01f * bDir : 0.0f;
+    r += rand() % 50 == 0 ? 0.01f * rDir : 0.0f;
+    g += rand() % 50 == 0 ? 0.01f * gDir : 0.0f;
+    b += rand() % 50 == 0 ? 0.01f * bDir : 0.0f;
 
     (r >= 1.0f) ? rDir = -1.0f : ((r <= 0.0f) ? rDir = 1.0f : (void)0);
     (g >= 1.0f) ? gDir = -1.0f : ((g <= 0.0f) ? gDir = 1.0f : (void)0);

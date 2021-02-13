@@ -1,6 +1,6 @@
 #include "OSWindow.hpp"
 
-#include "spdlog/spdlog.h"
+#include "logger/Logger.hpp"
 #include "SDL_events.h"
 #include "SDL_video.h"
 
@@ -54,7 +54,7 @@ OSWindow::~OSWindow() {
 
 bool OSWindow::create(const OSWindowParams& params) {
     if (_sdlWindow != nullptr) {
-        spdlog::warn("[OSWindow] Already initialized. Skipping...");
+        LOG_WARN("[OSWindow] Already initialized. Skipping...");
         return true;
     }
 
@@ -62,7 +62,7 @@ bool OSWindow::create(const OSWindowParams& params) {
     _sdlWindow = SDL_CreateWindow(params.name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, params.width,
                                   params.height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
     if (_sdlWindow == nullptr) {
-        spdlog::error("[SDL] Could not create a SDL OSWindow. {}", SDL_GetError());
+        LOG_ERROR("[SDL] Could not create a SDL OSWindow. %s", SDL_GetError());
         return false;
     }
 
@@ -71,7 +71,7 @@ bool OSWindow::create(const OSWindowParams& params) {
 
 void OSWindow::onSDLEvent(const SDL_WindowEvent& event) {
     SDL_WindowEventID windowEventID = (SDL_WindowEventID)event.event;
-    spdlog::debug("[OSWindow({})::onSDLEvent] {}\n", id(), stringifyWindowEventID(windowEventID));
+    LOG("[OSWindow(%d)::onSDLEvent] %s", id(), stringifyWindowEventID(windowEventID));
 
     OSWindowEvent windowEvent{*this, {}};
     switch (windowEventID) {
@@ -115,7 +115,7 @@ Size<int> OSWindow::size() const {
 
 void OSWindow::destroy() {
     if (_sdlWindow == nullptr) {
-        spdlog::warn("[OSWindow] Trying to destroy OSWindow when it's not created");
+        LOG_WARN("[OSWindow] Trying to destroy OSWindow when it's not created");
         return;
     }
 

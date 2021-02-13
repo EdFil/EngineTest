@@ -1,7 +1,6 @@
 #include "rendering/OpenGL/ProgramGL.hpp"
 
-#include <GL/glew.h>
-#include <spdlog/spdlog.h>
+#include <glad/glad.h>
 #include "rendering/RenderingDevice.hpp"
 #include "rendering/OpenGL/ShaderGL.hpp"
 
@@ -18,7 +17,7 @@ void ProgramGL::createProgram(Device& device) {
 
     //_id = glCreateProgram();
     //if (_id == 0) {
-    //    SPDLOG_ERROR("Error creating program");
+    //    LOG_ERROR("Error creating program");
     //    return;
     //}
 
@@ -29,7 +28,7 @@ void ProgramGL::createProgram(Device& device) {
     //GLint status = 0;
     //glGetProgramiv(_id, GL_LINK_STATUS, &status);
     //if (GL_FALSE == status) {
-    //    SPDLOG_ERROR("{}: failed to link program");
+    //    LOG_ERROR("{}: failed to link program");
     //    deleteProgram();
     //}
 }

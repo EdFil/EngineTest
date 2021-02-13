@@ -5,14 +5,14 @@
 
 #include "SDL.h"
 #include "TextureManager.hpp"
+#include "logger/Logger.hpp"
 #include "rendering/RenderingDevice.hpp"
-#include "spdlog/cfg/argv.h"
 
 Engine::Engine(int argc, char* argv[]) : _windowManager(*this) {
-    spdlog::cfg::load_argv_levels(argc, argv);
 }
 
 bool Engine::initialize() {
+    if (!Logger::init()) return false;
     if (!_windowManager.initialize()) return false;
     if (!_renderer.init(_windowManager.mainWindow()->sdlWindow())) return false;
 
