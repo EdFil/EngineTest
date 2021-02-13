@@ -50,6 +50,7 @@ OSWindow::OSWindow() : _sdlWindow(nullptr) {
 
 OSWindow::~OSWindow() {
     destroy();
+
 }
 
 bool OSWindow::create(const OSWindowParams& params) {
