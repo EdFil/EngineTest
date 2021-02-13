@@ -1,5 +1,7 @@
 cmake-build*/
 build/
+imgui.ini
+log.txt
 
 # VSCode
 .vscode/*

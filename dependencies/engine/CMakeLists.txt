@@ -27,6 +27,7 @@ message(STATUS "")
 # ============
 include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/sdl2/Builder.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/glad/Builder.cmake")
+include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/imgui/Builder.cmake")
 include("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/stb/Builder.cmake")
 message(STATUS "")
 message(STATUS "=== Resources ===")
@@ -56,7 +57,7 @@ add_library(Engine_Static STATIC ${SOURCES})
 target_include_directories(Engine_Static PUBLIC "${SOURCE_DIR}")
 
 # Link dependencies
-target_link_libraries(Engine_Static PUBLIC glad SDL2::Core SDL2::Main stb_static)
+target_link_libraries(Engine_Static PUBLIC glad SDL2::Core SDL2::Main stb_static imgui::imgui)
 
 # Source group generation for IDEs
 foreach(SOURCE IN ITEMS ${SOURCES})

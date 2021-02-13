@@ -1,6 +1,8 @@
 #include "rendering/OpenGL/RenderingDeviceGL.hpp"
 
 #include <SDL_render.h>
+#include <backends/imgui_impl_opengl3.h>
+#include <backends/imgui_impl_sdl.h>
 #include <glad/glad.h>
 
 #include "logger/Logger.hpp"
@@ -29,6 +31,13 @@ bool RenderingDeviceGL::init() {
         LOG("[RenderingDeviceGL] OpenGL version %d.%d", GLVersion.major, GLVersion.minor);
     }
 
+    // Setup Dear ImGui context
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGui_ImplSDL2_InitForOpenGL(_window, _context);
+    ImGui_ImplOpenGL3_Init("#version 130");
+
     bool wasSuccess = true;
     wasSuccess &= _renderingDeviceInfo.init();
     wasSuccess &= _shaderManager.init();
@@ -41,11 +50,19 @@ bool RenderingDeviceGL::init() {
 }
 
 RenderingDeviceGL::~RenderingDeviceGL() {
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
+    ImGui::DestroyContext();
+
     SDL_GL_DeleteContext(_context);
     SDL_DestroyRenderer(_renderer);
 }
 
 void RenderingDeviceGL::preRender() {
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame(_window);
+    ImGui::NewFrame();
+
     static float r = 0;
     static float rDir = 1.0f;
     static float g = 0;
@@ -66,5 +83,6 @@ void RenderingDeviceGL::preRender() {
 }
 
 void RenderingDeviceGL::postRender() {
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     SDL_GL_SwapWindow(_window);
 }
