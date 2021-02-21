@@ -1,12 +1,12 @@
 #include "OSWindowManager.hpp"
 
-#include <cstring>
 #include <SDL.h>
+#include <cstring>
 
-#include "logger/Logger.hpp"
 #include "Engine.hpp"
+#include "logger/Logger.hpp"
 
-OSWindowManager::OSWindowManager(Engine& engine) : _engine(engine), _windows{nullptr} {
+OSWindowManager::OSWindowManager(Engine& engine) : _engine(engine) {
 }
 
 bool OSWindowManager::initialize() {
@@ -25,42 +25,39 @@ bool OSWindowManager::initialize() {
 }
 
 OSWindow* OSWindowManager::createWindow(const OSWindowParams& params) {
-    size_t i = 0;
-    for (; i < k_maxWindowCount; i++) {
-        if (_windows[i] == nullptr) break;
-    }
-
-    if (i >= k_maxWindowCount) {
+    if (_windows.size() == _windows.capacity()) {
         LOG_ERROR("[OSWindowManager] Error: Already reached the max number of instanced windows (%d)",
-                  k_maxWindowCount);
+                  _windows.capacity());
         return nullptr;
     }
 
-    OSWindow* window = new OSWindow();
+    OSWindow* window = _windows.emplace_back();
     if (!window->create(params)) {
-        delete window;
+        destroyWindow(window);
         return nullptr;
     }
 
-    _windows[i] = window;
     return window;
+}
+
+void OSWindowManager::destroyWindow(OSWindow* window) {
+    _windows.erase(std::remove(_windows.begin(), _windows.end(), *window));
 }
 
 void OSWindowManager::onEventCalled(const OSWindowEventType& type, const OSWindowEvent& data) {
     switch (type) {
         case OSWindowEventType::CLOSE:
             onWindowClosedEvent(data);
+            break;
         default:
             break;
     }
 }
 
 void OSWindowManager::destroy() {
-    for (size_t i = 0; i < k_maxWindowCount; i++) {
-        destroyWindow(_windows[i]);
+    for (uint32_t i = _windows.size() - 1; i > 0; --i) {
+        destroyWindow(&_windows[i]);
     }
-
-    SDL_Quit();
 }
 
 void OSWindowManager::onSDLEvent(const SDL_WindowEvent& event) {
@@ -88,23 +85,11 @@ void OSWindowManager::onWindowClosedEvent(const OSWindowEvent& event) {
 }
 
 OSWindow* OSWindowManager::windowSlotWithID(uint32_t id) {
-    for (size_t i = 0; i < k_maxWindowCount; i++) {
-        if (_windows[i] && _windows[i]->id() == id) {
-            return _windows[i];
+    for (uint32_t i = 0; i < _windows.size(); ++i) {
+        if (_windows[i].id() == id) {
+            return &_windows[i];
         }
     }
 
     return nullptr;
-}
-
-void OSWindowManager::destroyWindow(OSWindow* window) {
-    size_t i = 0;
-    for (; i < k_maxWindowCount; i++) {
-        if (_windows[i] == window) break;
-    }
-
-    if (i < k_maxWindowCount && _windows[i] != nullptr) {
-        delete _windows[i];
-        _windows[i] = nullptr;
-    }
 }

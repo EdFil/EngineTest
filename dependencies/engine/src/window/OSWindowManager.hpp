@@ -1,12 +1,11 @@
 #pragma once
 
 #include "OSWindow.hpp"
-#include "EventQueue.hpp"
+#include "container/FixedArray.hpp"
 #include "window/Utils.hpp"
 
 class Engine;
 struct SDL_WindowEvent;
-
 
 class OSWindowManager : private OSWindowEventObserver {
 public:
@@ -16,17 +15,16 @@ public:
     void onSDLEvent(const SDL_WindowEvent& event);
 
     OSWindow* createWindow(const OSWindowParams& params);
-    OSWindow* mainWindow() const { return _windows[0]; }
-
+    void destroyWindow(OSWindow* window);
+    OSWindow* mainWindow() { return _windows.begin(); }
 
 private:
     Engine& _engine;
-    OSWindow* _windows[k_maxWindowCount];
+    FixedArray<OSWindow, k_maxWindowCount> _windows;
 
     void destroy();
     void onWindowClosedEvent(const OSWindowEvent& event);
     OSWindow* windowSlotWithID(uint32_t id);
-    void destroyWindow(OSWindow* window);
 
     void onEventCalled(const OSWindowEventType& type, const OSWindowEvent& data) final;
 };

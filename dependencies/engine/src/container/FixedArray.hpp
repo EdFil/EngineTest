@@ -14,6 +14,9 @@ public:
     /** Returns the number of elements in the array */
     uint32_t size() const { return m_size; }
 
+    /** Returns the maximum number of elements this array can hold */
+    uint32_t capacity() const { return N; }
+
     /** Copy this element to the back to the array */
     T* push_back(const T& object) {
         if (m_size >= N) return nullptr;
@@ -36,7 +39,7 @@ public:
     /** Remove all elements starting from the element provided. erase(std::remove()) idiom */
     void erase(T* value) {
         if (value > m_pData) {
-            int newIndex = value - m_pData;
+            uint32_t newIndex = (uint32_t)(value - m_pData);
             if (newIndex < N) {
                 m_size = newIndex;
             }
@@ -48,13 +51,13 @@ public:
 
     /** Gets array element on index 'index' */
     T& operator[](uint32_t index) {
-        SDL_assert(index > 0 && index < m_size);
+        SDL_assert(index >= 0 && index < m_size);
         return m_pData[index];
     }
 
     /** Gets const array element on index 'index' */
     const T& operator[](uint32_t index) const {
-        SDL_assert(index > 0 && index < m_size);
+        SDL_assert(index >= 0 && index < m_size);
         return m_pData[index];
     }
 

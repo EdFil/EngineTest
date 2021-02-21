@@ -28,6 +28,9 @@ public:
     /** Returns the number of elements in the array */
     uint32_t size() const { return m_size; }
 
+    /** Returns how many elements this array can hold without having to re-allocate */
+    uint32_t capacity() const { return m_capacity; }
+
     /** Resize the array so it can fit 'size' elements */
     bool resize(uint32_t capacity);
 
@@ -71,13 +74,13 @@ public:
 
     /** Gets array element on index 'index' */
     T& operator[](uint32_t index) { 
-        SDL_assert(index > 0 && index < m_size);
+        SDL_assert(index >= 0 && index < m_size);
         return m_pData[index]; 
     }
 
     /** Gets const array element on index 'index' */
     const T& operator[](uint32_t index) const { 
-        SDL_assert(index > 0 && index < m_size);
+        SDL_assert(index >= 0 && index < m_size);
         return m_pData[index]; 
     }
 

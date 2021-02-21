@@ -1,8 +1,8 @@
 #include "OSWindow.hpp"
 
-#include "logger/Logger.hpp"
 #include "SDL_events.h"
 #include "SDL_video.h"
+#include "logger/Logger.hpp"
 
 const char* stringifyWindowEventID(SDL_WindowEventID eventID) {
     switch (eventID) {
@@ -45,24 +45,23 @@ const char* stringifyWindowEventID(SDL_WindowEventID eventID) {
     }
 }
 
-OSWindow::OSWindow() : _sdlWindow(nullptr) {
+OSWindow::OSWindow() : m_pSDLWindow(nullptr) {
 }
 
 OSWindow::~OSWindow() {
     destroy();
-
 }
 
 bool OSWindow::create(const OSWindowParams& params) {
-    if (_sdlWindow != nullptr) {
+    if (m_pSDLWindow != nullptr) {
         LOG_WARN("[OSWindow] Already initialized. Skipping...");
         return true;
     }
 
     // Create OSWindow
-    _sdlWindow = SDL_CreateWindow(params.name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, params.width,
-                                  params.height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
-    if (_sdlWindow == nullptr) {
+    m_pSDLWindow = SDL_CreateWindow(params.name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, params.width,
+                                    params.height, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_OPENGL);
+    if (m_pSDLWindow == nullptr) {
         LOG_ERROR("[SDL] Could not create a SDL OSWindow. %s", SDL_GetError());
         return false;
     }
@@ -77,12 +76,12 @@ void OSWindow::onSDLEvent(const SDL_WindowEvent& event) {
     OSWindowEvent windowEvent{*this, {}};
     switch (windowEventID) {
         case SDL_WINDOWEVENT_CLOSE:
-            _eventDispatcher.Signal(OSWindowEventType::CLOSE, windowEvent);
+            m_eventDispatcher.Signal(OSWindowEventType::CLOSE, windowEvent);
             break;
 
         case SDL_WINDOWEVENT_RESIZED:
             windowEvent.data.size = {event.data1, event.data2};
-            _eventDispatcher.Signal(OSWindowEventType::RESIZE, windowEvent);
+            m_eventDispatcher.Signal(OSWindowEventType::RESIZE, windowEvent);
             break;
 
         case SDL_WINDOWEVENT_NONE:
@@ -105,29 +104,29 @@ void OSWindow::onSDLEvent(const SDL_WindowEvent& event) {
 }
 
 uint32_t OSWindow::id() const {
-    return SDL_GetWindowID(_sdlWindow);
+    return SDL_GetWindowID(m_pSDLWindow);
 }
 
 Size<int> OSWindow::size() const {
     Size<int> size;
-    SDL_GetWindowSize(_sdlWindow, &size.width, &size.height);
+    SDL_GetWindowSize(m_pSDLWindow, &size.width, &size.height);
     return size;
 }
 
 void OSWindow::destroy() {
-    if (_sdlWindow == nullptr) {
+    if (m_pSDLWindow == nullptr) {
         LOG_WARN("[OSWindow] Trying to destroy OSWindow when it's not created");
         return;
     }
 
-    SDL_DestroyWindow(_sdlWindow);
-    _sdlWindow = nullptr;
+    SDL_DestroyWindow(m_pSDLWindow);
+    m_pSDLWindow = nullptr;
 }
 
 void OSWindow::subscribe(OSWindowEventObserver& observer) {
-    _eventDispatcher.Subscribe(observer);
+    m_eventDispatcher.Subscribe(observer);
 }
 
 void OSWindow::unsubscribe(OSWindowEventObserver& observer) {
-    _eventDispatcher.Unsubscribe(observer);
+    m_eventDispatcher.Unsubscribe(observer);
 }
